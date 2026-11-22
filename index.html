@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SANTALI SMART STUDY | Online Mock Test & Leaderboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MathJax for Chemical Formulas & LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        html, body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Noto Sans Devanagari', 'Noto Sans', Arial, sans-serif;
+            max-width: 100vw;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button, label, input, select, summary {
+            touch-action: manipulation;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] .dropdown-arrow { transform: rotate(180deg); }
+
+        /* Blogger-safe responsive layout: scoped to this mock-test page */
+        *, *::before, *::after { box-sizing: border-box; }
+        html { width: 100%; max-width: 100%; }
+        body { width: 100%; min-width: 0; margin: 0; }
+        img, video, iframe, canvas, svg { max-width: 100%; }
+        #main-home-view, #exam-view, #result-view {
+            width: 100%; min-width: 0; margin-left: auto; margin-right: auto;
+        }
+        #exam-view, #result-view, #main-home-view { overflow-wrap: anywhere; }
+        #question-text, #single-review-card-container, #options-container,
+        #filtered-questions-wrapper, #exam-view table, #result-view table {
+            min-width: 0; max-width: 100%;
+        }
+        #question-text, #single-review-card-container { word-break: normal; overflow-wrap: anywhere; }
+        #options-container > *, #single-review-card-container * { min-width: 0; }
+        #exam-view table, #result-view table { width: 100%; }
+        @media (max-width: 640px) {
+            #main-home-view, #exam-view, #result-view { padding-left: 10px !important; padding-right: 10px !important; }
+            #question-text { font-size: clamp(16px, 4.4vw, 19px); line-height: 1.75; }
+            #options-container > div { padding: 12px !important; gap: 10px !important; }
+            #single-review-card-container > div { padding: 12px !important; }
+            #exam-view button, #result-view button { max-width: 100%; }
+            #result-view table { display: block; overflow-x: auto; }
+        }
+        @media (min-width: 641px) and (max-width: 1024px) {
+            #main-home-view, #exam-view, #result-view { padding-left: 18px; padding-right: 18px; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Top Header: Vertical Mode में Title ऊपर पूरा साफ दिखेगा और User/Logout उसके नीचे -->
+    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-md">
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex flex-col sm:grid sm:grid-cols-3 items-center gap-2 sm:gap-0">
+            <!-- Desktop Left: Home Button -->
+            <div class="hidden sm:flex items-center justify-start">
+                <button type="button" onclick="backToExamCatalog()" class="text-xs sm:text-sm font-bold text-slate-200 hover:text-amber-400 flex items-center gap-1.5 cursor-pointer">
+                    <span>🏠</span> <span>होम</span>
+                </button>
+            </div>
+
+            <!-- Center: Website Title (Never overlapped in vertical mode) -->
+            <div onclick="backToExamCatalog()" class="text-center cursor-pointer select-none w-full sm:w-auto">
+                <h1 class="font-extrabold text-base sm:text-xl md:text-2xl tracking-wider text-amber-400 leading-tight whitespace-nowrap">
+                    📚 SANTALI SMART STUDY
+                </h1>
+                <p class="text-[10px] sm:text-xs text-slate-300 font-medium mt-0.5">ऑनलाइन मॉक टेस्ट एवं लीडरबोर्ड पोर्टल</p>
+            </div>
+
+            <!-- Mobile Bottom Row / Desktop Right: Home (Mobile) + Login / User Info slightly below title -->
+            <div class="w-full sm:w-auto flex items-center justify-between sm:justify-end gap-2 pt-1 sm:pt-0 border-t border-slate-800/80 sm:border-t-0">
+                <button type="button" onclick="backToExamCatalog()" class="sm:hidden text-xs font-bold text-slate-200 hover:text-amber-400 flex items-center gap-1 cursor-pointer px-2 py-1 rounded-lg bg-slate-800/70">
+                    <span>🏠</span> <span>होम</span>
+                </button>
+
+                <div class="flex items-center justify-end gap-2 ml-auto sm:ml-0">
+                    <button id="header-login-btn" type="button" onclick="showStudentLogin()" class="px-3 py-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow transition cursor-pointer whitespace-nowrap">
+                        🔐 Login / Sign In
+                    </button>
+                    <div id="header-user-info" class="hidden items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1 rounded-xl">
+                        <span id="header-user-label" class="text-xs font-bold text-amber-300 max-w-[140px] sm:max-w-[160px] truncate">Student</span>
+                        <button type="button" onclick="logoutStudent()" class="text-[10px] bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-0.5 rounded-lg transition cursor-pointer">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hidden Password Modal (Admin) -->
+    <div id="password-modal" class="fixed inset-0 z-50 bg-black/60 hidden backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-bold text-slate-800">🔒 एडमिन प्रमाणीकरण</h3>
+                <button type="button" onclick="closePasswordModal()" class="text-slate-400 hover:text-slate-700 font-bold cursor-pointer p-1">✕</button>
+            </div>
+            <p class="text-xs text-slate-500 mb-3">एडमिन पैनल खोलने के लिए गुप्त पासवर्ड दर्ज करें:</p>
+            <input type="password" id="admin-pass-input" placeholder="••••••••" class="w-full p-2.5 text-sm border border-slate-300 rounded-xl mb-4 focus:outline-none focus:border-blue-600 text-center tracking-widest" onkeydown="if(event.key==='Enter') verifyAdminPassword()">
+            <div class="flex gap-2">
+                <button type="button" onclick="closePasswordModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-200 cursor-pointer">रद्द करें</button>
+                <button type="button" onclick="verifyAdminPassword()" class="w-1/2 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 shadow cursor-pointer">खोलें</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Standalone Live Leaderboard Modal (किसी भी समय रैंक देखने के लिए) -->
+    <div id="standalone-leaderboard-modal" class="fixed inset-0 z-[150] bg-slate-950/75 hidden backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-3xl w-full my-auto shadow-2xl border border-slate-300 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white px-4 py-3.5 flex items-center justify-between gap-2 shrink-0">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="text-xl shrink-0">🏆</span>
+                    <div class="min-w-0">
+                        <h3 class="text-sm sm:text-base font-extrabold text-amber-400 truncate">लाइव स्टूडेंट लीडरबोर्ड (Top 10 & Rank)</h3>
+                        <p id="modal-lb-set-title" class="text-[11px] text-slate-300 truncate">मॉक टेस्ट रैंक लिस्ट</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeStandaloneLeaderboard()" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold cursor-pointer shrink-0">✕ बंद करें</button>
+            </div>
+
+            <!-- यदि एक से अधिक प्रैक्टिस सेट हों तो चुनने का ड्रॉपडाउन -->
+            <div id="modal-lb-set-selector-wrap" class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                <div class="flex items-center gap-2 flex-1 min-w-[200px]">
+                    <span class="text-xs font-bold text-slate-700 whitespace-nowrap">📚 टेस्ट चुनें:</span>
+                    <select id="modal-lb-set-select" onchange="changeStandaloneLeaderboardSet(this.value)" class="flex-1 bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-600 cursor-pointer"></select>
+                </div>
+                <div id="modal-my-rank-pill" class="bg-amber-400 text-slate-950 text-xs font-extrabold px-3 py-1 rounded-full shadow whitespace-nowrap">
+                    आपकी रैंक: जाँच हो रही है...
+                </div>
+            </div>
+
+            <!-- Horizontal Scrollable Table Container -->
+            <div class="p-3 sm:p-4 overflow-y-auto flex-1">
+                <p class="text-[11px] text-slate-500 mb-2 sm:hidden text-center">↔️ पूरा नाम, स्कोर और समय देखने के लिए टेबल को बाएँ-दाएँ स्क्रॉल करें</p>
+                <div class="w-full overflow-x-auto rounded-xl border border-slate-200" style="-webkit-overflow-scrolling: touch;">
+                    <table class="w-full min-w-[600px] text-left border-collapse text-xs sm:text-sm">
+                        <thead>
+                            <tr class="bg-slate-200/80 text-slate-700 border-b border-slate-300 font-bold whitespace-nowrap">
+                                <th class="py-2.5 px-3.5">स्थान (Rank)</th>
+                                <th class="py-2.5 px-3.5">विद्यार्थी का नाम</th>
+                                <th class="py-2.5 px-3.5 text-center">अंक (Score)</th>
+                                <th class="py-2.5 px-3.5 text-center">सटीकता</th>
+                                <th class="py-2.5 px-3.5 text-right">समय</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-leaderboard-tbody" class="divide-y divide-slate-200">
+                            <tr>
+                                <td colspan="5" class="py-6 text-center text-slate-500 text-xs">लीडरबोर्ड लोड हो रहा है...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login / Sign In Modal (Google Account Chooser + Direct Sign In) -->
+    <div id="phone-auth-gate" class="hidden fixed inset-0 z-[200] bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      <div class="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl border border-slate-200 my-auto">
+        <div class="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white p-6 relative text-center">
+            <button type="button" onclick="hideStudentLogin()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center font-bold text-sm cursor-pointer">✕</button>
+            <p class="text-[11px] font-bold tracking-[.2em] text-amber-300">SANTALI SMART STUDY</p>
+            <h2 class="text-xl sm:text-2xl font-extrabold mt-1">Login / Sign In</h2>
+            <p class="text-xs text-white/80 mt-1">अपनी Gmail चुनें या नाम व ईमेल/मोबाइल से तुरंत लॉगिन करें</p>
+        </div>
+
+        <div class="p-6 space-y-4">
+            <!-- 1. Google / Gmail Account Picker Button -->
+            <button id="google-login-btn" type="button" onclick="handleGoogleSignIn()" class="w-full flex items-center justify-center gap-3 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-extrabold py-3.5 px-4 border-2 border-blue-600 shadow-md transition cursor-pointer text-sm">
+                <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                    <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.8C6.2 7.2 8.9 5 12 5z"/>
+                    <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6l3.7 2.9c2.2-2 3.7-5 3.7-8.7z"/>
+                    <path fill="#FBBC05" d="M5.3 14.8c-.2-.8-.4-1.6-.4-2.5s.2-1.7.4-2.5L1.6 7C.6 9 0 11.2 0 13.5s.6 4.5 1.6 6.5l3.7-2.9z"/>
+                    <path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.1-6.7-5l-3.7 2.8C3.5 21.4 7.4 24 12 24z"/>
+                </svg>
+                <span>Google (Gmail) से Sign In करें</span>
+            </button>
+
+            <div class="relative flex py-1 items-center">
+                <div class="flex-grow border-t border-slate-200"></div>
+                <span class="flex-shrink mx-3 text-[11px] font-bold text-slate-400">या सीधे लॉगिन करें</span>
+                <div class="flex-grow border-t border-slate-200"></div>
+            </div>
+
+            <!-- 2. Direct Login / Sign In Form -->
+            <div>
+                <label for="auth-student-name" class="block text-xs font-bold text-slate-700 mb-1">आपका नाम (लीडरबोर्ड के लिए) *</label>
+                <input id="auth-student-name" type="text" autocomplete="name" placeholder="अपना पूरा नाम लिखें" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none focus:border-blue-600">
+            </div>
+
+            <div>
+                <label for="auth-identifier" class="block text-xs font-bold text-slate-700 mb-1">Gmail ID या मोबाइल नंबर *</label>
+                <input id="auth-identifier" type="text" autocomplete="username" placeholder="example@gmail.com या 9876543210" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none focus:border-blue-600">
+            </div>
+
+            <div>
+                <label for="auth-password" class="block text-xs font-bold text-slate-700 mb-1">पासवर्ड (कम से कम 6 अक्षर/अंक) *</label>
+                <input id="auth-password" type="password" autocomplete="current-password" placeholder="••••••" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none focus:border-blue-600" onkeydown="if(event.key==='Enter') handleDirectSignIn()">
+            </div>
+
+            <button id="direct-signin-btn" type="button" onclick="handleDirectSignIn()" class="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 text-sm shadow-lg shadow-blue-600/20 cursor-pointer transition">
+                🔐 Login / Sign In करें
+            </button>
+
+            <div id="auth-message" role="status" class="text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-center" aria-live="polite">
+                ऊपर Google (Gmail) बटन दबाकर अपनी Gmail चुनें या नाम व पासवर्ड से लॉगिन करें।
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Home View -->
+    <main id="main-home-view" class="flex-grow max-w-7xl w-full mx-auto px-4 py-5">
+        <section id="exam-catalog-section" class="mb-6">
+            <div class="mb-5 text-center">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900">अपनी परीक्षा चुनें</h2>
+                <p class="text-sm text-slate-600 mt-1">किसी भी परीक्षा पर क्लिक करें और उसके सभी उपलब्ध मॉक टेस्ट व लीडरबोर्ड देखें।</p>
+            </div>
+            <div id="exam-catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- Practice Sets Section: Heading & Breadcrumb Strictly Centered as requested in Photo 1 -->
+        <div id="practice-sets-section" class="hidden">
+            <div class="mb-6">
+                <div class="flex justify-start mb-3">
+                    <button type="button" onclick="backToExamCatalog()" class="px-3.5 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-xs font-bold text-slate-800 cursor-pointer">← सभी परीक्षाएँ</button>
+                </div>
+                <div class="text-center max-w-3xl mx-auto px-2">
+                    <div id="breadcrumb-trail" class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1 text-center">सभी परीक्षाएं</div>
+                    <h2 id="selected-course-heading" class="text-xl md:text-2xl font-extrabold text-slate-900 text-center leading-snug">सभी उपलब्ध प्रैक्टिस सेट्स</h2>
+                    <div class="mt-2.5 flex justify-center">
+                        <span id="sets-count-badge" class="bg-blue-100 text-blue-800 text-xs font-bold px-3.5 py-1 rounded-full">0 प्रैक्टिस सेट्स</span>
+                    </div>
+                </div>
+            </div>
+            <div id="sets-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </div>
+    </main>
+
+    <!-- Terms & Conditions Modal -->
+    <div id="terms-modal" class="fixed inset-0 z-50 bg-black/60 hidden backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 my-auto">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-base font-bold text-slate-900">📋 नियम एवं निर्देश (Instructions)</h3>
+                <button type="button" onclick="closeTermsModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg cursor-pointer p-1">✕</button>
+            </div>
+            <div id="terms-set-info" class="bg-blue-50 p-3.5 rounded-xl border border-blue-100 mb-4 text-xs space-y-1 text-blue-900"></div>
+            <div class="text-xs text-slate-600 space-y-2 mb-5 max-h-40 overflow-y-auto pr-1">
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li>स्क्रीन पर <strong>एक समय में एक ही प्रश्न</strong> दिखेगा।</li>
+                    <li>टेस्ट सबमिट करने के बाद आपको <strong>Top 10 स्टूडेंट्स का लीडरबोर्ड</strong> और आपकी अपनी रैंक दिखाई देगी।</li>
+                    <li>समान अंक होने पर कम समय लेने वाले विद्यार्थी को ऊपर रैंक मिलेगी।</li>
+                </ul>
+            </div>
+            <div class="mb-5 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                <span class="block text-xs font-bold text-slate-800 mb-2">🌐 अपनी भाषा चुनें:</span>
+                <div class="grid grid-cols-2 gap-3">
+                    <label for="lang-hi-radio" class="flex items-center justify-center p-2.5 rounded-lg border border-slate-300 bg-white cursor-pointer hover:border-blue-500 select-none">
+                        <input type="radio" id="lang-hi-radio" name="exam_lang" value="hi" checked class="w-4 h-4 mr-2 accent-blue-600 cursor-pointer">
+                        <span class="text-xs font-bold">हिन्दी (Hindi)</span>
+                    </label>
+                    <label for="lang-en-radio" class="flex items-center justify-center p-2.5 rounded-lg border border-slate-300 bg-white cursor-pointer hover:border-blue-500 select-none">
+                        <input type="radio" id="lang-en-radio" name="exam_lang" value="en" class="w-4 h-4 mr-2 accent-blue-600 cursor-pointer">
+                        <span class="text-xs font-bold">English (अंग्रेजी)</span>
+                    </label>
+                </div>
+            </div>
+
+            <label for="accept-terms-checkbox" class="flex items-center gap-3 p-3 bg-blue-50/60 hover:bg-blue-50 border border-blue-200 rounded-xl text-xs font-semibold text-slate-800 mb-5 cursor-pointer select-none">
+                <input type="checkbox" id="accept-terms-checkbox" class="w-5 h-5 accent-blue-600 rounded cursor-pointer shrink-0">
+                <span>मैं सभी नियम व शर्तों से सहमत हूँ।</span>
+            </label>
+
+            <div class="flex gap-3">
+                <button type="button" onclick="closeTermsModal()" class="w-1/3 py-3 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-200 cursor-pointer">रद्द करें</button>
+                <button type="button" onclick="confirmAndStartExam()" class="w-2/3 py-3 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 shadow cursor-pointer">टेस्ट शुरू करें 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Exam View -->
+    <section id="exam-view" class="hidden flex-grow max-w-4xl w-full mx-auto px-4 py-5">
+        <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden relative">
+            <div class="bg-slate-900 text-white px-4 py-2.5 border-b border-slate-800 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar whitespace-nowrap text-xs">
+                <div class="flex items-center gap-1.5 font-bold text-blue-400">
+                    <span>प्रश्न:</span>
+                    <span id="question-counter" class="bg-blue-600 text-white px-2 py-0.5 rounded">1 / 10</span>
+                </div>
+                <div class="flex items-center gap-1 font-mono font-bold text-amber-400 bg-slate-800 px-2.5 py-1 rounded border border-slate-700">
+                    ⏱️ <span id="exam-timer">00:15:00</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="exam-pos-marks" class="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded font-bold">सही: +1.0</span>
+                    <span id="exam-neg-marks" class="bg-red-500/20 border border-red-500/40 text-red-300 px-2 py-0.5 rounded font-bold">गलत: -0.25</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between gap-2">
+                <div class="relative">
+                    <button type="button" onclick="toggleJumpPalette()" class="px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 rounded-xl text-xs font-bold shadow-sm flex items-center gap-1 cursor-pointer">🔢 Jump to Q</button>
+                    <div id="jump-palette-dropdown" class="hidden absolute left-0 mt-2 w-64 bg-white text-slate-800 rounded-xl shadow-2xl border border-slate-200 p-3 z-50">
+                        <div class="flex justify-between items-center border-b pb-1.5 mb-2">
+                            <span class="text-xs font-bold text-slate-700">किसी भी प्रश्न पर जाएं:</span>
+                            <button type="button" onclick="toggleJumpPalette()" class="text-slate-400 hover:text-slate-700 text-xs font-bold cursor-pointer p-1">✕</button>
+                        </div>
+                        <div id="jump-questions-grid" class="grid grid-cols-5 gap-1.5 max-h-48 overflow-y-auto p-1"></div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-xl border border-slate-300 shadow-sm">
+                    <span class="text-[11px] font-bold text-slate-600 hidden sm:inline">🌐 भाषा:</span>
+                    <select id="live-lang-select" onchange="changeLiveLanguage(this.value)" class="bg-transparent text-slate-800 text-xs font-bold focus:outline-none cursor-pointer">
+                        <option value="hi">हिन्दी (Hindi)</option>
+                        <option value="en">English (अंग्रेजी)</option>
+                    </select>
+                </div>
+
+                <button type="button" onclick="submitExamConfirm()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition cursor-pointer">✅ Submit</button>
+            </div>
+
+            <div class="p-5 md:p-6">
+                <div id="question-text" class="text-base md:text-lg font-semibold text-slate-900 mb-6 leading-relaxed"></div>
+                <div id="options-container" class="space-y-3"></div>
+            </div>
+
+            <div class="bg-slate-50 px-5 py-4 border-t border-slate-200 flex justify-between items-center">
+                <button type="button" onclick="prevQuestion()" id="btn-prev" class="px-5 py-2.5 bg-white border border-slate-300 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-100 disabled:opacity-40 shadow-sm cursor-pointer">⬅️ Previous</button>
+                <button type="button" onclick="nextQuestion()" id="btn-next" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 disabled:opacity-40 shadow-sm cursor-pointer">Next ➡️</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Result & Live Leaderboard View -->
+    <section id="result-view" class="hidden flex-grow max-w-4xl w-full mx-auto px-4 py-5">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-300 overflow-hidden">
+            <div class="p-4 md:p-6 border-b">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div class="w-full text-center">
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3.5 py-1 rounded-full">📊 FINAL RESULT & LEADERBOARD</span>
+                        <h2 id="res-set-title" class="text-lg md:text-xl font-bold text-slate-900 mt-2 text-center w-full">प्रैक्टिस सेट परिणाम</h2>
+                        <p id="res-score-summary" class="text-xs md:text-sm font-medium text-slate-600 mt-1 text-center"></p>
+                    </div>
+                    <div class="w-full flex justify-center mt-2">
+                        <button type="button" onclick="backToHome()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-blue-700 shadow cursor-pointer">🏠 होम पर लौटें</button>
+                    </div>
+                </div>
+
+                <!-- LIVE LEADERBOARD SECTION (Left-to-Right Scrollable as requested in Photo 2) -->
+                <div class="mt-6 bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">🏆</span>
+                            <div>
+                                <h3 class="text-sm sm:text-base font-extrabold text-amber-400">स्टूडेंट लीडरबोर्ड (Top 10 Rankers)</h3>
+                                <p class="text-[11px] text-slate-300">इस मॉक टेस्ट में भाग लेने वाले सभी छात्रों में आपका स्थान</p>
+                            </div>
+                        </div>
+                        <div id="my-rank-pill" class="bg-amber-400 text-slate-950 text-xs font-extrabold px-3 py-1 rounded-full shadow">
+                            आपकी रैंक: गणना हो रही है...
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] text-slate-500 py-1.5 px-3 bg-slate-100 border-b border-slate-200 sm:hidden text-center">↔️ पूरा नाम, स्कोर और समय देखने के लिए बाएँ-से-दाएँ स्क्रॉल करें</p>
+
+                    <div class="w-full overflow-x-auto" style="-webkit-overflow-scrolling: touch;">
+                        <table class="w-full min-w-[600px] text-left border-collapse text-xs sm:text-sm">
+                            <thead>
+                                <tr class="bg-slate-200/80 text-slate-700 border-b border-slate-300 font-bold whitespace-nowrap">
+                                    <th class="py-2.5 px-3.5 sm:px-4">स्थान (Rank)</th>
+                                    <th class="py-2.5 px-3.5 sm:px-4">विद्यार्थी का नाम</th>
+                                    <th class="py-2.5 px-3.5 sm:px-4 text-center">अंक (Score)</th>
+                                    <th class="py-2.5 px-3.5 sm:px-4 text-center">सटीकता</th>
+                                    <th class="py-2.5 px-3.5 sm:px-4 text-right">समय</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-tbody" class="divide-y divide-slate-200">
+                                <tr>
+                                    <td colspan="5" class="py-6 text-center text-slate-500 text-xs">लीडरबोर्ड लोड हो रहा है...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <p class="text-xs md:text-sm font-semibold text-slate-700 mt-6 mb-3">👇 प्रश्नों की विस्तृत समीक्षा (Answer Key & Review) के लिए किसी भी बॉक्स पर क्लिक करें:</p>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+                    <div onclick="toggleResultCategory('all')" id="box-all" class="cursor-pointer bg-blue-50 hover:bg-blue-100 border-2 border-blue-300 p-3 rounded-xl text-center transition select-none shadow-sm">
+                        <p class="text-xs text-blue-700 font-bold uppercase tracking-wider">Total Questions</p>
+                        <p id="res-total" class="text-xl md:text-2xl font-extrabold text-blue-900 mt-1">0</p>
+                        <span class="text-[11px] text-blue-600 underline font-semibold mt-1 inline-block">देखने के लिए क्लिक करें</span>
+                    </div>
+                    <div onclick="toggleResultCategory('right')" id="box-right" class="cursor-pointer bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-300 p-3 rounded-xl text-center transition select-none shadow-sm">
+                        <p class="text-xs text-emerald-700 font-bold uppercase tracking-wider">Right Questions</p>
+                        <p id="res-correct" class="text-xl md:text-2xl font-extrabold text-emerald-700 mt-1">0</p>
+                        <span class="text-[11px] text-emerald-600 underline font-semibold mt-1 inline-block">देखने के लिए क्लिक करें</span>
+                    </div>
+                    <div onclick="toggleResultCategory('wrong')" id="box-wrong" class="cursor-pointer bg-red-50 hover:bg-red-100 border-2 border-red-300 p-3 rounded-xl text-center transition select-none shadow-sm">
+                        <p class="text-xs text-red-700 font-bold uppercase tracking-wider">Wrong Questions</p>
+                        <p id="res-wrong" class="text-xl md:text-2xl font-extrabold text-red-700 mt-1">0</p>
+                        <span class="text-[11px] text-red-600 underline font-semibold mt-1 inline-block">देखने के लिए क्लिक करें</span>
+                    </div>
+                    <div onclick="toggleResultCategory('skipped')" id="box-skipped" class="cursor-pointer bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 p-3 rounded-xl text-center transition select-none shadow-sm">
+                        <p class="text-xs text-slate-700 font-bold uppercase tracking-wider">Skipped Questions</p>
+                        <p id="res-skipped" class="text-xl md:text-2xl font-extrabold text-slate-800 mt-1">0</p>
+                        <span class="text-[11px] text-slate-600 underline font-semibold mt-1 inline-block">देखने के लिए क्लिक करें</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="filtered-questions-wrapper" class="hidden p-3 md:p-6">
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div class="flex items-center gap-2">
+                        <span id="review-category-badge" class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-lg">Category</span>
+                        <h3 id="filtered-category-title" class="text-base font-bold text-slate-900">प्रश्न समीक्षा</h3>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="text-xs font-bold text-slate-700 bg-white px-3 py-1.5 rounded-lg border border-slate-300 shadow-sm">
+                            प्रश्न संख्या: <span id="review-pos-indicator" class="text-blue-600 font-extrabold">1 / 1</span>
+                        </div>
+                        <button type="button" id="review-language-toggle" onclick="toggleReviewLanguage()" class="px-3 py-2 rounded-xl border border-blue-300 bg-blue-50 text-blue-700 text-xs md:text-sm font-bold hover:bg-blue-100 shadow-sm cursor-pointer">हिंदी → English</button>
+                    </div>
+                </div>
+
+                <div id="single-review-card-container" class="mb-5 w-full"></div>
+
+                <div class="flex justify-between items-center bg-slate-100 p-4 rounded-xl border border-slate-200">
+                    <button type="button" onclick="prevReviewQuestion()" id="btn-review-prev" class="px-5 py-2.5 bg-white border border-slate-300 text-slate-800 rounded-xl text-sm font-bold hover:bg-slate-200 disabled:opacity-40 shadow-sm cursor-pointer">⬅️ पिछला प्रश्न</button>
+                    <button type="button" onclick="nextReviewQuestion()" id="btn-review-next" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 disabled:opacity-40 shadow-sm cursor-pointer">अगला प्रश्न ➡️</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Panel Modal -->
+    <div id="admin-modal" class="fixed inset-0 z-50 bg-black/75 hidden backdrop-blur-sm overflow-y-auto p-2 sm:p-4">
+        <div class="bg-white rounded-2xl max-w-6xl w-full mx-auto my-2 sm:my-6 shadow-2xl overflow-hidden border border-slate-300 flex flex-col max-h-[94vh]">
+            <div class="bg-slate-900 text-white px-4 sm:px-6 py-4 flex justify-between items-center shrink-0">
+                <div>
+                    <h3 class="font-bold text-sm sm:text-base">🛠️ मास्टर एडमिन कंट्रोल पैनल (Admin Panel)</h3>
+                    <p class="text-[11px] text-slate-400">सभी प्रतियोगी परीक्षाएं और प्रैक्टिस सेट्स का प्रबंधन</p>
+                </div>
+                <button type="button" onclick="closeAdminPanel()" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3.5 py-2 rounded-lg font-bold cursor-pointer shrink-0">✕ बंद करें</button>
+            </div>
+
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 touch-pan-y">
+                <div class="bg-indigo-50/60 p-4 sm:p-5 rounded-xl border border-indigo-200">
+                    <h4 class="font-bold text-base text-indigo-950 mb-3">🎓 कोर्स / एग्जाम और सब-कोर्स मैनेजर</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200">
+                            <h5 class="text-xs font-bold text-slate-800 mb-2">1️⃣ मुख्य एग्जाम जोड़ें:</h5>
+                            <div class="flex gap-2 mb-3">
+                                <input type="text" id="new-main-exam-inp" placeholder="उदा: JSSC" class="flex-grow p-2 text-xs border border-slate-300 rounded-lg">
+                                <button type="button" onclick="addMainExam()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer">➕ जोड़ें</button>
+                            </div>
+                            <div id="admin-main-exams-tags" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto"></div>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-200">
+                            <h5 class="text-xs font-bold text-slate-800 mb-2">2️⃣ सब-कैटेगरी जोड़ें:</h5>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                                <select id="parent-exam-select" onchange="renderAdminSubExamTags()" class="p-2 text-xs border border-slate-300 rounded-lg bg-slate-50 font-semibold"></select>
+                                <input type="text" id="new-sub-exam-inp" placeholder="उदा: झारखंड पुलिस" class="p-2 text-xs border border-slate-300 rounded-lg">
+                            </div>
+                            <button type="button" onclick="addSubExam()" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-bold mb-2 cursor-pointer">➕ सब-कैटेगरी जोड़ें</button>
+                            <div id="admin-sub-exams-tags" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50/60 p-4 sm:p-5 rounded-xl border border-blue-200">
+                    <h4 class="font-bold text-base text-blue-950 mb-3" id="form-mode-title">➕ प्रैक्टिस सेट और प्रश्न जोड़ें</h4>
+                    <input type="hidden" id="edit-set-id" value="">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">1. मुख्य एग्जाम</label>
+                            <select id="set-main-exam-inp" onchange="populateSubExamDropdownForSet()" class="w-full p-2 text-xs border border-slate-300 rounded-lg bg-white font-semibold"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">2. सब-कैटेगरी</label>
+                            <select id="set-sub-exam-inp" class="w-full p-2 text-xs border border-slate-300 rounded-lg bg-white font-semibold"></select>
+                        </div>
+                        <div class="lg:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">3. प्रैक्टिस सेट का नाम</label>
+                            <input type="text" id="set-title-inp" placeholder="उदा: झारखंड पुलिस सेट 01" class="w-full p-2 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">समय (मिनट)</label>
+                            <input type="number" id="set-duration-inp" value="15" class="w-full p-2 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">सही उत्तर अंक (+)</label>
+                            <input type="number" step="0.5" id="set-pos-inp" value="1.0" class="w-full p-2 text-xs border border-slate-300 rounded-lg bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">नेगेटिव मार्किंग (-)</label>
+                            <input type="number" step="0.05" id="set-neg-inp" value="0.25" class="w-full p-2 text-xs border border-slate-300 rounded-lg bg-white">
+                        </div>
+                        <div class="flex items-end">
+                            <label for="set-locked-inp" class="flex items-center space-x-2 text-xs font-semibold text-slate-800 p-2 bg-white rounded-lg border border-slate-300 w-full cursor-pointer select-none">
+                                <input type="checkbox" id="set-locked-inp" checked class="w-4 h-4 accent-blue-600 cursor-pointer">
+                                <span>🔒 एक्टिव सेट</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <textarea id="bulk-questions-inp" rows="6" placeholder="Q: प्रश्न...&#10;A) विकल्प 1&#10;B) विकल्प 2&#10;C) विकल्प 3&#10;D) विकल्प 4&#10;Ans: 1&#10;Exp: व्याख्या..." class="w-full p-3 text-xs border border-slate-300 rounded-xl font-mono"></textarea>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="button" onclick="parseAndSavePracticeSet()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow cursor-pointer">💾 सेव करें</button>
+                        <button type="button" onclick="resetAdminForm()" class="px-4 py-2.5 bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer">रीसेट</button>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-sm text-slate-800 mb-3">📂 सभी प्रैक्टिस सेट्स:</h4>
+                    <div id="admin-sets-list" class="space-y-2.5"></div>
+                </div>
+
+                <div class="bg-indigo-50/60 p-4 sm:p-5 rounded-xl border border-indigo-200 flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <h4 class="font-bold text-sm text-indigo-950">⬇️ पूरा डेटा डाउनलोड</h4>
+                        <p class="text-[11px] text-slate-500">सभी सेट, प्रश्न और परीक्षा सूची एक फाइल में (JSON)</p>
+                    </div>
+                    <button type="button" onclick="downloadAllData()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow cursor-pointer">⬇️ डाउनलोड करें</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legal Pages Modal -->
+    <div id="legal-pages-modal" class="fixed inset-0 z-[95] bg-black/70 hidden backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-4xl w-full my-auto shadow-2xl border border-slate-300 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-slate-900 text-white px-5 py-4 flex justify-between items-center shrink-0">
+                <h3 id="legal-modal-title" class="font-bold text-sm sm:text-base text-amber-400">पेज जानकारी</h3>
+                <button type="button" onclick="closeLegalPage()" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold cursor-pointer">✕ बंद करें</button>
+            </div>
+            <div class="bg-slate-100 px-4 py-2 border-b border-slate-200 flex flex-wrap gap-2 shrink-0">
+                <button type="button" onclick="openLegalPage('about')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-slate-300 cursor-pointer">About Us</button>
+                <button type="button" onclick="openLegalPage('contact')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-slate-300 cursor-pointer">Contact Us</button>
+                <button type="button" onclick="openLegalPage('privacy')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-slate-300 cursor-pointer">Privacy Policy</button>
+                <button type="button" onclick="openLegalPage('terms')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-slate-300 cursor-pointer">Terms & Conditions</button>
+            </div>
+            <div id="legal-modal-body" class="p-5 sm:p-6 overflow-y-auto text-xs sm:text-sm text-slate-700 space-y-4 leading-relaxed flex-1"></div>
+        </div>
+    </div>
+
+    <!-- केवल ब्लैक बैकग्राउंड वाला अबाउट/फुटर सेक्शन -->
+    <footer id="home-only-footer" class="bg-slate-900 text-slate-300 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div>
+                    <h3 class="text-white font-bold text-base mb-2 flex items-center gap-2">📚 SANTALI SMART STUDY</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        इस पोर्टल पर JSSC, JPSC, UGC NET, JTET, रेलवे, SSC एवं अन्य सभी प्रतियोगी परीक्षाओं में पूछे जाने वाले <strong>संताली (Santali)</strong> विषय तथा सामान्य अध्ययन के सभी महत्वपूर्ण मॉक टेस्ट (Mock Tests) और प्रैक्टिस सेट्स उपलब्ध कराए जाते हैं।
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-2.5">महत्वपूर्ण लिंक्स (Quick Links)</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><button type="button" onclick="openLegalPage('about')" class="hover:text-amber-400 transition cursor-pointer">➔ हमारे बारे में (About Us)</button></li>
+                        <li><button type="button" onclick="openLegalPage('contact')" class="hover:text-amber-400 transition cursor-pointer">➔ संपर्क करें (Contact Us)</button></li>
+                        <li><button type="button" onclick="openLegalPage('privacy')" class="hover:text-amber-400 transition cursor-pointer">➔ गोपनीयता नीति (Privacy Policy)</button></li>
+                        <li><button type="button" onclick="openLegalPage('terms')" class="hover:text-amber-400 transition cursor-pointer">➔ नियम एवं शर्तें (Terms & Conditions)</button></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-2.5">संपर्क एवं टेलीग्राम (Connect With Us)</h4>
+                    <div class="space-y-2 text-xs text-slate-400">
+                        <p>📧 <strong>Email:</strong> <a href="mailto:bhootn75@gmail.com" class="text-blue-400 hover:underline">bhootn75@gmail.com</a></p>
+                        <p>📢 <strong>Telegram Channel:</strong> <a href="https://t.me/santalisstudy" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:underline font-semibold">SANTALI SMART STUDY (@santalisstudy)</a></p>
+                        <p class="text-[11px] text-slate-500 pt-1">किसी भी प्रकार के सुझाव, प्रश्न या सहायता के लिए आप हमें ईमेल या टेलीग्राम के माध्यम से संपर्क कर सकते हैं।</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 pt-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-[11px] text-slate-400">
+                <p>© <span id="footer-year">2026</span> <strong>SANTALI SMART STUDY</strong>. All Rights Reserved.</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button type="button" onclick="openLegalPage('about')" class="hover:text-white cursor-pointer">About Us</button>
+                    <button type="button" onclick="openLegalPage('contact')" class="hover:text-white cursor-pointer">Contact Us</button>
+                    <button type="button" onclick="openLegalPage('privacy')" class="hover:text-white cursor-pointer">Privacy Policy</button>
+                    <button type="button" onclick="openLegalPage('terms')" class="hover:text-white cursor-pointer">Terms & Conditions</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main Application & Instant Auth Script -->
+    <script>
+        window.currentStudent = null;
+        let pendingSetToStart = null;
+
+        function setAuthStatusText(message, isError = false) {
+            const el = document.getElementById('auth-message');
+            if (!el) return;
+            el.textContent = message;
+            el.className = 'text-xs p-2.5 rounded-xl border text-center font-semibold ' +
+                (isError ? 'bg-red-50 border-red-200 text-red-700' : 'bg-blue-50 border-blue-200 text-blue-800');
+        }
+
+        function updateHeaderUI(student) {
+            const loginBtn = document.getElementById('header-login-btn');
+            const userInfo = document.getElementById('header-user-info');
+            const userLabel = document.getElementById('header-user-label');
+            if (student && student.uid) {
+                loginBtn?.classList.add('hidden');
+                userInfo?.classList.remove('hidden');
+                userInfo?.classList.add('flex');
+                if (userLabel) userLabel.textContent = student.displayName || student.email || 'Student';
+            } else {
+                loginBtn?.classList.remove('hidden');
+                userInfo?.classList.add('hidden');
+                userInfo?.classList.remove('flex');
+            }
+        }
+
+        function showStudentLogin() {
+            const gate = document.getElementById('phone-auth-gate');
+            gate?.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            setAuthStatusText('Google (Gmail) पर क्लिक करके अपनी Gmail चुनें या नाम व पासवर्ड से लॉगिन करें।');
+        }
+        window.showStudentLogin = showStudentLogin;
+
+        function hideStudentLogin() {
+            const gate = document.getElementById('phone-auth-gate');
+            gate?.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        window.hideStudentLogin = hideStudentLogin;
+
+        async function completeStudentLogin(studentObj) {
+            window.currentStudent = studentObj;
+            try {
+                localStorage.setItem('sss_active_student_v3', JSON.stringify(studentObj));
+            } catch (_) {}
+            updateHeaderUI(studentObj);
+            hideStudentLogin();
+
+            if (window.cloudSaveStudentProfile) {
+                window.cloudSaveStudentProfile(studentObj).catch(() => {});
+            }
+
+            if (pendingSetToStart) {
+                const targetSet = pendingSetToStart;
+                pendingSetToStart = null;
+                openTermsModal(targetSet);
+            }
+        }
+        window.completeStudentLogin = completeStudentLogin;
+
+        async function logoutStudent() {
+            if (window.firebaseSignOut) {
+                try { await window.firebaseSignOut(); } catch (_) {}
+            }
+            localStorage.removeItem('sss_active_student_v3');
+            window.currentStudent = null;
+            updateHeaderUI(null);
+        }
+        window.logoutStudent = logoutStudent;
+
+        try {
+            const saved = JSON.parse(localStorage.getItem('sss_active_student_v3'));
+            if (saved && saved.uid) {
+                window.currentStudent = saved;
+                updateHeaderUI(saved);
+            }
+        } catch (_) {}
+
+        async function handleDirectSignIn() {
+            const nameInput = document.getElementById('auth-student-name')?.value.trim() || '';
+            const rawId = document.getElementById('auth-identifier')?.value.trim() || '';
+            const password = document.getElementById('auth-password')?.value || '';
+
+            if (!nameInput) {
+                setAuthStatusText('कृपया अपना नाम लिखें (लीडरबोर्ड में दिखाने के लिए)।', true);
+                return;
+            }
+            if (!rawId) {
+                setAuthStatusText('कृपया अपनी Gmail ID या 10 अंकों का मोबाइल नंबर लिखें।', true);
+                return;
+            }
+            if (!password || password.length < 6) {
+                setAuthStatusText('कृपया कम से कम 6 अक्षरों/अंकों का पासवर्ड लिखें।', true);
+                return;
+            }
+
+            let normalizedEmail = rawId.toLowerCase();
+            const digitsOnly = rawId.replace(/\D/g, '');
+            if (/^\d{10}$/.test(digitsOnly) && !rawId.includes('@')) {
+                normalizedEmail = `m${digitsOnly}@santalismartstudy.in`;
+            } else if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) {
+                setAuthStatusText('कृपया सही ईमेल आईडी या 10 अंकों का मोबाइल नंबर लिखें।', true);
+                return;
+            }
+
+            const btn = document.getElementById('direct-signin-btn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Sign In हो रहा है...';
+            }
+            setAuthStatusText('लॉगिन किया जा रहा है...');
+
+            try {
+                if (window.firebaseDirectEmailAuth) {
+                    const user = await window.firebaseDirectEmailAuth(normalizedEmail, password, nameInput);
+                    await completeStudentLogin({
+                        uid: user.uid,
+                        displayName: nameInput,
+                        email: normalizedEmail
+                    });
+                    return;
+                }
+            } catch (_) {}
+
+            const safeUid = 'stu_' + btoa(unescape(encodeURIComponent(normalizedEmail))).replace(/[^a-zA-Z0-9]/g, '').slice(0, 20);
+            await completeStudentLogin({
+                uid: safeUid,
+                displayName: nameInput,
+                email: normalizedEmail
+            });
+
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = '🔐 Login / Sign In करें';
+            }
+        }
+        window.handleDirectSignIn = handleDirectSignIn;
+
+        async function handleGoogleSignIn() {
+            if (!window.triggerFirebaseGoogleSignIn) {
+                setAuthStatusText('Google सेवा लोड हो रही है, कृपया 2 सेकंड बाद क्लिक करें या नीचे नाम/ईमेल से लॉगिन करें।', true);
+                return;
+            }
+            await window.triggerFirebaseGoogleSignIn();
+        }
+        window.handleGoogleSignIn = handleGoogleSignIn;
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').classList.add('hidden');
+        }
+
+        function verifyAdminPassword() {
+            const entered = document.getElementById('admin-pass-input').value.trim();
+            if (btoa(entered) === "MDQxOTk=") {
+                closePasswordModal();
+                openAdminPanel();
+            } else {
+                alert("❌ गलत पासवर्ड!");
+            }
+        }
+
+        function openAdminPanel() {
+            document.getElementById('admin-modal').classList.remove('hidden');
+            renderAdminExamManagers();
+            populateMainExamDropdownForSet();
+            renderAdminSetsList();
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        }
+
+        const defaultExamHierarchy = [
+            { id: 'jssc', name: 'JSSC', subExams: [
+                { id: 'jssc_police', name: 'झारखंड पुलिस' },
+                { id: 'jssc_kakshpal', name: 'JSSC कक्षपाल' },
+                { id: 'jssc_utpad', name: 'उत्पाद सिपाही' },
+                { id: 'jh_homeguard', name: 'झारखंड होमगार्ड' },
+                { id: 'jh_chowkidar', name: 'झारखंड चौकीदार' },
+                { id: 'jssc_cgl', name: 'JSSC CGL' },
+                { id: 'jssc_jailwarder', name: 'जेल वार्डर' },
+                { id: 'jssc_inter', name: 'JSSC इंटर स्तरीय' },
+                { id: 'jpsc_pt', name: 'JPSC' },
+                { id: 'jtet', name: 'JTET' },
+                { id: 'santali', name: 'संताली भाषा विशेष परीक्षा' },
+                { id: 'santali_jssc', name: 'JSSC संताली विषय' }
+            ]},
+            { id: 'ssc', name: 'SSC परीक्षाएँ', subExams: [{ id: 'ssc_gd', name: 'SSC GD Constable' }, { id: 'ssc_cgl', name: 'SSC CGL' }] },
+            { id: 'rrb', name: 'रेलवे परीक्षाएँ', subExams: [{ id: 'rrb_group_d', name: 'RRB Group D' }] },
+            { id: 'upsc', name: 'UPSC परीक्षाएँ', subExams: [{ id: 'upsc_pre', name: 'UPSC Prelims' }] }
+        ];
+
+        let examHierarchy = JSON.parse(localStorage.getItem('sss_exam_hierarchy_v2')) || defaultExamHierarchy;
+        defaultExamHierarchy.forEach(defaultMain => {
+            let existingMain = examHierarchy.find(item => item.id === defaultMain.id);
+            if (!existingMain) {
+                examHierarchy.push(JSON.parse(JSON.stringify(defaultMain)));
+            } else {
+                existingMain.subExams = existingMain.subExams || [];
+                defaultMain.subExams.forEach(defaultSub => {
+                    if (!existingMain.subExams.some(item => item.id === defaultSub.id)) {
+                        existingMain.subExams.push(JSON.parse(JSON.stringify(defaultSub)));
+                    }
+                });
+            }
+        });
+        try { localStorage.setItem('sss_exam_hierarchy_v2', JSON.stringify(examHierarchy)); } catch (e) {}
+
+        let selectedMainExamId = 'all';
+        let selectedSubExamId = 'all';
+
+        function saveHierarchyToStorage() {
+            localStorage.setItem('sss_exam_hierarchy_v2', JSON.stringify(examHierarchy));
+            if (window.cloud) window.cloud.saveHierarchy(examHierarchy).catch(() => {});
+        }
+
+        const defaultQuestionsRaw = `Q: धोने का सोडा (Washing Soda) का रासायनिक सूत्र क्या है?
+A) $Na_{2}CO_{3} \\cdot 10H_{2}O$
+B) $NaHCO_{3}$
+C) $NaOH$
+D) $NaCl$
+Ans: 1
+Exp: धोने का सोडा का रासायनिक नाम सोडियम कार्बोनेट डेकाहाइड्रेट है और इसका सूत्र $Na_{2}CO_{3} \\cdot 10H_{2}O$ है।
+
+Q: What is the chemical formula of Washing Soda?
+A) $Na_{2}CO_{3} \\cdot 10H_{2}O$
+B) $NaHCO_{3}$
+C) $NaOH$
+D) $NaCl$
+Ans: 1
+Exp: The chemical name of washing soda is sodium carbonate decahydrate and its formula is $Na_{2}CO_{3} \\cdot 10H_{2}O$.`;
+
+        function parseQuestionsFromText(rawText) {
+            const cleanText = rawText.replace(/\r\n/g, '\n').replace(/---+/g, '\n').trim();
+            const blocks = cleanText.split(/(?=\n?\s*Q\s*[:.])/i).map(b => b.trim()).filter(Boolean);
+            const singleParsed = [];
+            for (const block of blocks) {
+                const qMatch = block.match(/Q\s*[:.]\s*([\s\S]*?)(?=\n\s*A[).])/i);
+                const aMatch = block.match(/\n\s*A[).]\s*([\s\S]*?)(?=\n\s*B[).])/i);
+                const bMatch = block.match(/\n\s*B[).]\s*([\s\S]*?)(?=\n\s*C[).])/i);
+                const cMatch = block.match(/\n\s*C[).]\s*([\s\S]*?)(?=\n\s*D[).])/i);
+                const dMatch = block.match(/\n\s*D[).]\s*([\s\S]*?)(?=\n\s*Ans\s*[:.])/i);
+                const ansMatch = block.match(/Ans\s*[:.]\s*([1-4A-Da-d])/i);
+                const expMatch = block.match(/Exp\s*[:.]\s*([\s\S]*)$/i);
+
+                if (qMatch && aMatch && bMatch && cMatch && dMatch && ansMatch) {
+                    let rawAns = ansMatch[1].toUpperCase();
+                    const ansMap = { '1': 0, '2': 1, '3': 2, '4': 3, 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+                    singleParsed.push({
+                        q: qMatch[1].trim(),
+                        options: [aMatch[1].trim(), bMatch[1].trim(), cMatch[1].trim(), dMatch[1].trim()],
+                        ans: ansMap[rawAns] ?? 0,
+                        exp: expMatch ? expMatch[1].trim() : ''
+                    });
+                }
+            }
+            const finalQuestions = [];
+            let i = 0;
+            while (i < singleParsed.length) {
+                const current = singleParsed[i];
+                const next = singleParsed[i + 1];
+                const isCurrentHindi = /[ऀ-ॿ]/.test(current.q);
+                const isNextEnglish = next && !/[ऀ-ॿ]/.test(next.q) && next.ans === current.ans;
+                if (isCurrentHindi && isNextEnglish) {
+                    finalQuestions.push({ hi: current, en: next });
+                    i += 2;
+                } else {
+                    finalQuestions.push({ hi: current, en: current });
+                    i += 1;
+                }
+            }
+            return finalQuestions;
+        }
+
+        let practiceSets = JSON.parse(localStorage.getItem('sss_practice_sets_v5')) || [
+            {
+                id: 101,
+                title: "JSSC झारखंड पुलिस - सामान्य विज्ञान प्रैक्टिस सेट 01",
+                mainExamId: "jssc",
+                subExamId: "jssc_police",
+                durationMinutes: 15,
+                marksPerQuestion: 1.0,
+                negativeMarking: 0.25,
+                isLocked: true,
+                rawText: defaultQuestionsRaw,
+                questions: parseQuestionsFromText(defaultQuestionsRaw)
+            }
+        ];
+
+        function saveSetsToStorage() {
+            try { localStorage.setItem('sss_practice_sets_v5', JSON.stringify(practiceSets)); } catch (e) {}
+        }
+
+        function cloudSaveSet(set) {
+            if (window.cloud) window.cloud.saveSet(set).catch(() => {});
+        }
+        function cloudDeleteSet(id) {
+            if (window.cloud) window.cloud.deleteSet(id).catch(() => {});
+        }
+        function cloudBackup(reason) {
+            if (window.cloud) window.cloud.backup({ reason, sets: practiceSets, hierarchy: examHierarchy }).catch(() => {});
+        }
+
+        window.getLocalData = () => ({ sets: practiceSets, hierarchy: examHierarchy });
+        window.applyCloudSets = (list) => {
+            practiceSets = list;
+            try { localStorage.setItem('sss_practice_sets_v5', JSON.stringify(practiceSets)); } catch (e) {}
+            renderPracticeSets();
+            renderExamCatalog();
+            renderAdminSetsList();
+        };
+        window.applyCloudHierarchy = (items) => {
+            examHierarchy = items;
+            try { localStorage.setItem('sss_exam_hierarchy_v2', JSON.stringify(examHierarchy)); } catch (e) {}
+            renderExamCatalog();
+            renderPracticeSets();
+        };
+
+        function downloadAllData() {
+            const data = { exportedAt: new Date().toISOString(), hierarchy: examHierarchy, practiceSets };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `santali-smart-study-backup-${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+
+        function syncHomeOnlyFooter() {
+            const footer = document.getElementById('home-only-footer');
+            const home = document.getElementById('main-home-view');
+            const catalog = document.getElementById('exam-catalog-section');
+            const sets = document.getElementById('practice-sets-section');
+            const exam = document.getElementById('exam-view');
+            const result = document.getElementById('result-view');
+            const show = !!(footer && home && catalog && sets && exam && result &&
+                !home.classList.contains('hidden') &&
+                !catalog.classList.contains('hidden') &&
+                sets.classList.contains('hidden') &&
+                exam.classList.contains('hidden') &&
+                result.classList.contains('hidden'));
+            if (footer) footer.classList.toggle('hidden', !show);
+        }
+
+        function renderExamCatalog() {
+            const grid = document.getElementById('exam-catalog-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            examHierarchy.forEach(main => {
+                (main.subExams || []).forEach(sub => {
+                    const card = document.createElement('div');
+                    card.className = 'text-left group overflow-hidden bg-white rounded-2xl border border-slate-200 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all flex flex-col min-h-[285px] cursor-pointer';
+                    const courseSets = practiceSets.filter(set => set.subExamId === sub.id);
+                    const count = courseSets.length;
+                    const questionCount = courseSets.reduce((sum, set) => sum + ((set.questions || []).length), 0);
+                    const mainLabel = main.name || 'प्रतियोगी परीक्षा';
+                    const colors = ['from-blue-800 via-indigo-700 to-violet-700','from-emerald-800 via-teal-700 to-cyan-700','from-orange-700 via-rose-700 to-pink-700','from-slate-800 via-slate-700 to-blue-800'];
+                    const color = colors[Math.abs(String(sub.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0)) % colors.length];
+                    card.innerHTML = `<div class="relative bg-gradient-to-r ${color} text-white p-5 overflow-hidden">
+                          <div class="absolute -right-5 -top-8 text-8xl opacity-10">📚</div>
+                          <div class="relative flex items-start justify-between gap-3"><div><span class="inline-block text-[10px] uppercase tracking-widest bg-white/20 border border-white/25 rounded-full px-2.5 py-1 mb-3">${mainLabel}</span><h2 class="text-xl md:text-2xl font-extrabold leading-tight">${sub.name}</h2><p class="text-white/85 text-xs mt-2">स्मार्ट तैयारी • मॉक टेस्ट • लीडरबोर्ड रैंक</p></div><span class="text-3xl shrink-0">🎓</span></div>
+                          <div class="relative mt-5 grid grid-cols-2 gap-2"><div class="rounded-xl bg-black/15 border border-white/20 p-2.5"><strong class="block text-2xl">${count >= 15 ? count + '+' : count}</strong><span class="text-[11px] text-white/85">उपलब्ध मॉक टेस्ट</span></div><div class="rounded-xl bg-black/15 border border-white/20 p-2.5"><strong class="block text-2xl">${questionCount}+</strong><span class="text-[11px] text-white/85">कुल अभ्यास प्रश्न</span></div></div>
+                        </div>
+                        <div class="p-4 flex flex-col flex-1">
+                            <div class="flex flex-wrap gap-2 text-[11px] mb-4">
+                                <span class="bg-emerald-50 text-emerald-700 rounded-full px-2.5 py-1 font-bold">✓ Free Practice</span>
+                                <button type="button" onclick="event.stopPropagation(); openCourseLeaderboard('${sub.id}')" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 rounded-full px-2.5 py-1 font-bold cursor-pointer transition">✓ Live Leaderboard</button>
+                                <button type="button" onclick="event.stopPropagation(); openCourseLeaderboard('${sub.id}')" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded-full px-2.5 py-1 font-bold cursor-pointer transition">✓ Top 10 & Rank</button>
+                            </div>
+                            <p class="text-sm text-slate-600 leading-relaxed flex-1">${sub.name} की तैयारी के लिए उपलब्ध प्रैक्टिस सेट देखें और टेस्ट देकर सभी छात्रों के बीच अपना स्थान (Rank) जानें।</p>
+                            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                <span class="text-xs text-slate-500">${count} टेस्ट • ${questionCount} प्रश्न</span>
+                                <span class="rounded-xl bg-blue-600 group-hover:bg-blue-700 text-white font-bold text-sm px-4 py-2.5">टेस्ट देखें →</span>
+                            </div>
+                        </div>`;
+                    card.addEventListener('click', () => {
+                        selectedMainExamId = main.id;
+                        selectedSubExamId = sub.id;
+                        renderPracticeSets();
+                        document.getElementById('exam-catalog-section').classList.add('hidden');
+                        document.getElementById('practice-sets-section').classList.remove('hidden');
+                        syncHomeOnlyFooter();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    });
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        function backToExamCatalog() {
+            selectedMainExamId = 'all';
+            selectedSubExamId = 'all';
+            document.getElementById('exam-view').classList.add('hidden');
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('main-home-view').classList.remove('hidden');
+            document.getElementById('exam-catalog-section').classList.remove('hidden');
+            document.getElementById('practice-sets-section').classList.add('hidden');
+            syncHomeOnlyFooter();
+            renderExamCatalog();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderPracticeSets() {
+            const grid = document.getElementById('sets-grid');
+            grid.innerHTML = '';
+            let filtered = practiceSets;
+            let headingText = 'सभी उपलब्ध प्रैक्टिस सेट्स';
+            let trailText = 'ALL EXAMS';
+
+            if (selectedMainExamId !== 'all') {
+                const mainObj = examHierarchy.find(e => e.id === selectedMainExamId);
+                filtered = filtered.filter(s => s.mainExamId === selectedMainExamId);
+                trailText = mainObj ? mainObj.name : '';
+                headingText = mainObj ? `${mainObj.name} - सभी प्रैक्टिस सेट्स` : '';
+                if (selectedSubExamId !== 'all') {
+                    const subObj = mainObj?.subExams.find(sub => sub.id === selectedSubExamId);
+                    filtered = filtered.filter(s => s.subExamId === selectedSubExamId);
+                    if (subObj) {
+                        trailText = `${mainObj.name} ➔ ${subObj.name}`;
+                        headingText = `${subObj.name} (Practice Sets)`;
+                    }
+                }
+            }
+
+            document.getElementById('breadcrumb-trail').innerText = trailText;
+            document.getElementById('selected-course-heading').innerText = headingText;
+            document.getElementById('sets-count-badge').innerText = `${filtered.length} प्रैक्टिस सेट्स`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full bg-white p-8 rounded-2xl text-center text-slate-500 border border-slate-200 text-xs">इस श्रेणी में अभी कोई प्रैक्टिस सेट नहीं है।</div>`;
+                return;
+            }
+
+            filtered.forEach(set => {
+                const mainObj = examHierarchy.find(e => e.id === set.mainExamId);
+                const subObj = mainObj?.subExams.find(sub => sub.id === set.subExamId);
+                const badgeLabel = subObj ? subObj.name : (mainObj ? mainObj.name : 'Exam Set');
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center mb-3 gap-2">
+                            <span class="bg-blue-50 text-blue-700 text-[11px] font-bold px-2.5 py-1 rounded-lg">${badgeLabel}</span>
+                            <span class="text-xs font-bold text-slate-500 whitespace-nowrap">⏱️ ${set.durationMinutes} Min</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-base mb-2">${set.title}</h3>
+                        <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500 mb-4">
+                            <span>कुल प्रश्न: <strong>${set.questions.length}</strong></span>
+                            <span>•</span>
+                            <button type="button" onclick="openSetLeaderboardModal('${set.id}')" class="inline-flex items-center gap-1 text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-0.5 rounded-full font-bold cursor-pointer transition">
+                                🏆 रैंक लीडरबोर्ड देखें
+                            </button>
+                        </div>
+                    </div>
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <button type="button" onclick="openSetLeaderboardModal('${set.id}')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">
+                            📊 Top 10 & Rank
+                        </button>
+                        <button type="button" onclick="initiateSetOpen(${set.id})" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer">प्रारंभ करें ➡️</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function initiateSetOpen(setId) {
+            const set = practiceSets.find(s => String(s.id) === String(setId));
+            if (!set) return;
+            pendingSetToStart = set;
+            if (!window.currentStudent || !window.currentStudent.uid) {
+                showStudentLogin();
+                return;
+            }
+            openTermsModal(set);
+        }
+
+        function openTermsModal(set) {
+            document.getElementById('terms-set-info').innerHTML = `
+                <p class="font-bold text-sm">${set.title}</p>
+                <p>कुल प्रश्न: <strong>${set.questions.length}</strong> | समय: <strong>${set.durationMinutes} मिनट</strong></p>
+            `;
+            document.getElementById('accept-terms-checkbox').checked = false;
+            document.getElementById('terms-modal').classList.remove('hidden');
+        }
+
+        function closeTermsModal() {
+            document.getElementById('terms-modal').classList.add('hidden');
+        }
+
+        let reviewLang = 'hi';
+
+        let activeExam = {
+            set: null,
+            lang: 'hi',
+            currentIndex: 0,
+            shuffledQuestions: [],
+            userAnswers: {},
+            questionTimes: {},
+            timerSeconds: 0,
+            timeTakenSeconds: 0,
+            intervalId: null,
+            questionStartTime: 0
+        };
+
+        function confirmAndStartExam() {
+            const checkbox = document.getElementById('accept-terms-checkbox');
+            if (!checkbox.checked) {
+                alert("कृपया टेस्ट शुरू करने से पहले नियम एवं शर्तों पर टिक करें!");
+                return;
+            }
+            const langRadio = document.querySelector('input[name="exam_lang"]:checked');
+            activeExam.lang = langRadio ? langRadio.value : 'hi';
+            document.getElementById('live-lang-select').value = activeExam.lang;
+            closeTermsModal();
+            startExamSession(pendingSetToStart);
+        }
+
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startExamSession(set) {
+            activeExam.set = set;
+            activeExam.currentIndex = 0;
+            activeExam.userAnswers = {};
+            activeExam.questionTimes = {};
+            activeExam.timerSeconds = (set.durationMinutes || 15) * 60;
+            activeExam.timeTakenSeconds = 0;
+            activeExam.questionStartTime = Date.now();
+
+            let baseQuestions = JSON.parse(JSON.stringify(set.questions));
+            let shuffledQList = shuffleArray(baseQuestions);
+
+            activeExam.shuffledQuestions = shuffledQList.map(qPair => {
+                let newPair = {};
+                const optionOrder = shuffleArray([0, 1, 2, 3]);
+                ['hi', 'en'].forEach(lang => {
+                    if (qPair[lang]) {
+                        let originalOptions = qPair[lang].options;
+                        let newOptions = optionOrder.map(idx => originalOptions[idx]);
+                        let newAnsIndex = optionOrder.indexOf(qPair[lang].ans);
+
+                        newPair[lang] = {
+                            q: qPair[lang].q,
+                            options: newOptions,
+                            ans: newAnsIndex,
+                            exp: qPair[lang].exp
+                        };
+                    }
+                });
+                return newPair;
+            });
+
+            document.getElementById('exam-pos-marks').innerText = `सही: +${set.marksPerQuestion || 1.0}`;
+            document.getElementById('exam-neg-marks').innerText = `गलत: -${set.negativeMarking || 0.25}`;
+
+            document.getElementById('main-home-view').classList.add('hidden');
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('exam-view').classList.remove('hidden');
+            syncHomeOnlyFooter();
+
+            clearInterval(activeExam.intervalId);
+            activeExam.intervalId = setInterval(() => {
+                activeExam.timerSeconds--;
+                activeExam.timeTakenSeconds++;
+
+                const hrs = String(Math.floor(activeExam.timerSeconds / 3600)).padStart(2, '0');
+                const mins = String(Math.floor((activeExam.timerSeconds % 3600) / 60)).padStart(2, '0');
+                const secs = String(activeExam.timerSeconds % 60).padStart(2, '0');
+                document.getElementById('exam-timer').innerText = `${hrs}:${mins}:${secs}`;
+
+                if (activeExam.timerSeconds <= 0) {
+                    clearInterval(activeExam.intervalId);
+                    finishAndShowResult();
+                }
+            }, 1000);
+
+            renderCurrentQuestion();
+        }
+
+        function changeLiveLanguage(newLang) {
+            activeExam.lang = newLang;
+            renderCurrentQuestion();
+        }
+
+        function toggleJumpPalette() {
+            document.getElementById('jump-palette-dropdown').classList.toggle('hidden');
+        }
+
+        function recordCurrentQuestionTime() {
+            const now = Date.now();
+            const elapsed = Math.floor((now - activeExam.questionStartTime) / 1000);
+            const idx = activeExam.currentIndex;
+            activeExam.questionTimes[idx] = (activeExam.questionTimes[idx] || 0) + elapsed;
+            activeExam.questionStartTime = now;
+        }
+
+        // Normalize numeric HTML entities that may be double-escaped when question data is pasted into Blogger.
+        // This only decodes numeric entities; existing question HTML/MathJax markup is preserved.
+        function decodeNumericEntities(value) {
+            if (value === null || value === undefined) return '';
+            let textValue = String(value);
+            for (let pass = 0; pass < 4; pass++) {
+                const decoded = textValue.replace(/(?:&amp;)*&#(?:x([0-9a-f]+)|(\d+));/gi, (match, hex, dec) => {
+                    const code = parseInt(hex || dec, hex ? 16 : 10);
+                    if (!Number.isFinite(code) || code < 0 || code > 0x10FFFF) return match;
+                    try { return String.fromCodePoint(code); } catch (_) { return match; }
+                });
+                if (decoded === textValue) break;
+                textValue = decoded;
+            }
+            return textValue;
+        }
+
+        function renderCurrentQuestion() {
+            const idx = activeExam.currentIndex;
+            const total = activeExam.shuffledQuestions.length;
+            const qPair = activeExam.shuffledQuestions[idx];
+            const qData = qPair[activeExam.lang] || qPair.hi;
+
+            document.getElementById('question-counter').innerText = `${idx + 1} / ${total}`;
+            document.getElementById('question-text').innerHTML = `<span class="text-blue-700 font-bold mr-1">Q${idx + 1}.</span> ${decodeNumericEntities(qData.q)}`;
+
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = '';
+            const labels = ['A', 'B', 'C', 'D'];
+
+            qData.options.forEach((optText, optIdx) => {
+                optText = decodeNumericEntities(optText);
+                const isSelected = activeExam.userAnswers[idx] === optIdx;
+                const btn = document.createElement('div');
+                btn.onclick = () => {
+                    if (activeExam.userAnswers[idx] === optIdx) delete activeExam.userAnswers[idx];
+                    else activeExam.userAnswers[idx] = optIdx;
+                    renderCurrentQuestion();
+                };
+                btn.className = `p-3.5 rounded-xl border text-sm cursor-pointer transition flex items-center gap-3 select-none ${isSelected ? 'bg-blue-50 border-blue-600 text-blue-950 font-semibold shadow-sm' : 'bg-white border-slate-200 hover:border-blue-400 text-slate-800'}`;
+                btn.innerHTML = `<span class="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 ${isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}">${labels[optIdx]}</span><span class="flex-grow">${optText}</span>`;
+                optsContainer.appendChild(btn);
+            });
+
+            const jumpGrid = document.getElementById('jump-questions-grid');
+            jumpGrid.innerHTML = '';
+            for (let i = 0; i < total; i++) {
+                const answered = activeExam.userAnswers[i] !== undefined;
+                const jBtn = document.createElement('button');
+                jBtn.type = 'button';
+                jBtn.onclick = () => {
+                    recordCurrentQuestionTime();
+                    activeExam.currentIndex = i;
+                    activeExam.questionStartTime = Date.now();
+                    document.getElementById('jump-palette-dropdown').classList.add('hidden');
+                    renderCurrentQuestion();
+                };
+                jBtn.className = `h-8 rounded-lg text-xs font-bold transition cursor-pointer ${i === idx ? 'bg-blue-600 text-white ring-2 ring-blue-300' : (answered ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200')}`;
+                jBtn.innerText = i + 1;
+                jumpGrid.appendChild(jBtn);
+            }
+
+            document.getElementById('btn-prev').disabled = idx === 0;
+            document.getElementById('btn-next').disabled = idx === total - 1;
+            if (window.MathJax) MathJax.typesetPromise();
+        }
+
+        function prevQuestion() {
+            recordCurrentQuestionTime();
+            if (activeExam.currentIndex > 0) {
+                activeExam.currentIndex--;
+                activeExam.questionStartTime = Date.now();
+                renderCurrentQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            recordCurrentQuestionTime();
+            if (activeExam.currentIndex < activeExam.shuffledQuestions.length - 1) {
+                activeExam.currentIndex++;
+                activeExam.questionStartTime = Date.now();
+                renderCurrentQuestion();
+            }
+        }
+
+        function submitExamConfirm() {
+            recordCurrentQuestionTime();
+            const answeredCount = Object.keys(activeExam.userAnswers).length;
+            const total = activeExam.shuffledQuestions.length;
+            if (confirm(`आपने ${total} में से ${answeredCount} प्रश्नों के उत्तर दिए हैं।\nक्या आप टेस्ट सबमिट करके अपना रिजल्ट और रैंक देखना चाहते हैं?`)) {
+                clearInterval(activeExam.intervalId);
+                finishAndShowResult();
+            }
+        }
+
+        function formatSecondsToMMSS(sec) {
+            const s = Math.max(0, Number(sec) || 0);
+            const m = String(Math.floor(s / 60)).padStart(2, '0');
+            const r = String(s % 60).padStart(2, '0');
+            return `${m}m ${r}s`;
+        }
+
+        // Top 10 Leaderboard + 11th Row for Current Student if Rank > 10 (Single-line cells for clean horizontal scroll)
+        function renderLeaderboardRows(entries, currentUid, targetTbodyId = 'leaderboard-tbody', targetPillId = 'my-rank-pill') {
+            const tbody = document.getElementById(targetTbodyId);
+            const rankPill = document.getElementById(targetPillId);
+            if (!tbody) return;
+
+            const sorted = [...entries].sort((a, b) => {
+                if (Number(b.score) !== Number(a.score)) return Number(b.score) - Number(a.score);
+                if (Number(b.accuracy) !== Number(a.accuracy)) return Number(b.accuracy) - Number(a.accuracy);
+                return Number(a.timeTakenSeconds || 999999) - Number(b.timeTakenSeconds || 999999);
+            });
+
+            const myIndex = currentUid ? sorted.findIndex(item => String(item.studentUid) === String(currentUid)) : -1;
+            const myRank = myIndex !== -1 ? myIndex + 1 : null;
+            const totalStudents = sorted.length;
+
+            if (rankPill) {
+                if (myRank) {
+                    rankPill.textContent = `आपका स्थान: #${myRank} (${myRank}वाँ स्थान / कुल ${totalStudents} छात्र)`;
+                } else {
+                    rankPill.textContent = `कुल प्रतिभागी: ${totalStudents} छात्र`;
+                }
+            }
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-500 text-xs">अभी तक इस प्रैक्टिस सेट में किसी ने टेस्ट सबमिट नहीं किया है।</td></tr>`;
+                return;
+            }
+
+            const top10 = sorted.slice(0, 10);
+            tbody.innerHTML = '';
+
+            const buildRowHTML = (item, rankNum, isMe, isEleventhRow = false) => {
+                let badge = `<span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md font-extrabold text-xs bg-slate-200 text-slate-800 whitespace-nowrap">#${rankNum} (${rankNum}वाँ स्थान)</span>`;
+                if (rankNum === 1) badge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md font-extrabold text-xs bg-amber-300 text-slate-950 whitespace-nowrap">🥇 #1 (1ला स्थान)</span>`;
+                else if (rankNum === 2) badge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md font-extrabold text-xs bg-slate-300 text-slate-900 whitespace-nowrap">🥈 #2 (2रा स्थान)</span>`;
+                else if (rankNum === 3) badge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md font-extrabold text-xs bg-orange-200 text-orange-950 whitespace-nowrap">🥉 #3 (3रा स्थान)</span>`;
+
+                const tr = document.createElement('tr');
+                if (isEleventhRow) {
+                    tr.className = 'bg-amber-100 border-t-2 border-amber-500 font-bold text-slate-950 whitespace-nowrap';
+                } else if (isMe) {
+                    tr.className = 'bg-blue-50 font-bold text-blue-950 whitespace-nowrap';
+                } else {
+                    tr.className = 'hover:bg-slate-100/80 text-slate-700 whitespace-nowrap';
+                }
+
+                const studentName = item.studentName || 'विद्यार्थी';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3.5 sm:px-4 whitespace-nowrap">${badge}</td>
+                    <td class="py-2.5 px-3.5 sm:px-4 whitespace-nowrap">
+                        <div class="inline-flex items-center gap-1.5">
+                            <span>${studentName}</span>
+                            ${isMe ? '<span class="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full font-extrabold whitespace-nowrap">आप (You)</span>' : ''}
+                        </div>
+                    </td>
+                    <td class="py-2.5 px-3.5 sm:px-4 text-center font-mono font-bold whitespace-nowrap">${Number(item.score).toFixed(2)} / ${item.maxScore || '-'}</td>
+                    <td class="py-2.5 px-3.5 sm:px-4 text-center whitespace-nowrap">${item.accuracy || 0}%</td>
+                    <td class="py-2.5 px-3.5 sm:px-4 text-right font-mono text-xs whitespace-nowrap">${formatSecondsToMMSS(item.timeTakenSeconds)}</td>
+                `;
+                return tr;
+            };
+
+            top10.forEach((item, idx) => {
+                const rankNum = idx + 1;
+                const isMe = currentUid && String(item.studentUid) === String(currentUid);
+                tbody.appendChild(buildRowHTML(item, rankNum, isMe, false));
+            });
+
+            if (myRank && myRank > 10) {
+                const sepRow = document.createElement('tr');
+                sepRow.innerHTML = `<td colspan="5" class="py-1 px-4 text-center text-[11px] font-bold text-amber-900 bg-amber-50 whitespace-nowrap">••• नीचे आपका स्थान (11वीं पंक्ति) •••</td>`;
+                tbody.appendChild(sepRow);
+
+                const myEntry = sorted[myIndex];
+                tbody.appendChild(buildRowHTML(myEntry, myRank, true, true));
+            }
+        }
+
+        // किसी भी समय (बिना टेस्ट दिए या बैक आने के बाद) लीडरबोर्ड और रैंक देखने के फंक्शन
+        async function loadAndRenderSetLeaderboard(setId, tbodyId, pillId) {
+            const currentUid = window.currentStudent?.uid || null;
+            const localLbKey = 'sss_leaderboard_set_' + String(setId);
+            let localEntries = [];
+            try { localEntries = JSON.parse(localStorage.getItem(localLbKey)) || []; } catch (_) {}
+
+            renderLeaderboardRows(localEntries, currentUid, tbodyId, pillId);
+
+            if (window.studentCloud) {
+                try {
+                    const cloudEntries = await window.studentCloud.fetchSetLeaderboard(String(setId));
+                    if (cloudEntries && cloudEntries.length > 0) {
+                        const mergedMap = new Map();
+                        [...localEntries, ...cloudEntries].forEach(item => {
+                            const prev = mergedMap.get(String(item.studentUid));
+                            if (!prev || Number(item.score) > Number(prev.score) || (Number(item.score) === Number(prev.score) && Number(item.timeTakenSeconds) < Number(prev.timeTakenSeconds))) {
+                                mergedMap.set(String(item.studentUid), item);
+                            }
+                        });
+                        renderLeaderboardRows(Array.from(mergedMap.values()), currentUid, tbodyId, pillId);
+                    }
+                } catch (_) {}
+            }
+        }
+
+        function openSetLeaderboardModal(setId, customSetList = null) {
+            const setsToChoose = customSetList && customSetList.length > 0 ? customSetList : practiceSets;
+            const targetSet = setsToChoose.find(s => String(s.id) === String(setId)) || setsToChoose[0];
+            if (!targetSet) {
+                alert('इस कोर्स में अभी कोई प्रैक्टिस सेट उपलब्ध नहीं है।');
+                return;
+            }
+
+            const modal = document.getElementById('standalone-leaderboard-modal');
+            const titleEl = document.getElementById('modal-lb-set-title');
+            const selectEl = document.getElementById('modal-lb-set-select');
+
+            if (titleEl) titleEl.textContent = targetSet.title;
+            if (selectEl) {
+                selectEl.innerHTML = '';
+                setsToChoose.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = String(s.id);
+                    opt.textContent = s.title;
+                    if (String(s.id) === String(targetSet.id)) opt.selected = true;
+                    selectEl.appendChild(opt);
+                });
+            }
+
+            modal.classList.remove('hidden');
+            loadAndRenderSetLeaderboard(targetSet.id, 'modal-leaderboard-tbody', 'modal-my-rank-pill');
+        }
+        window.openSetLeaderboardModal = openSetLeaderboardModal;
+
+        function openCourseLeaderboard(subExamId) {
+            const courseSets = practiceSets.filter(s => String(s.subExamId) === String(subExamId));
+            if (courseSets.length === 0) {
+                alert('इस परीक्षा श्रेणी में अभी कोई मॉक टेस्ट उपलब्ध नहीं है।');
+                return;
+            }
+            openSetLeaderboardModal(courseSets[0].id, courseSets);
+        }
+        window.openCourseLeaderboard = openCourseLeaderboard;
+
+        function changeStandaloneLeaderboardSet(newSetId) {
+            const set = practiceSets.find(s => String(s.id) === String(newSetId));
+            const titleEl = document.getElementById('modal-lb-set-title');
+            if (set && titleEl) titleEl.textContent = set.title;
+            loadAndRenderSetLeaderboard(newSetId, 'modal-leaderboard-tbody', 'modal-my-rank-pill');
+        }
+        window.changeStandaloneLeaderboardSet = changeStandaloneLeaderboardSet;
+
+        function closeStandaloneLeaderboard() {
+            document.getElementById('standalone-leaderboard-modal').classList.add('hidden');
+        }
+        window.closeStandaloneLeaderboard = closeStandaloneLeaderboard;
+
+        let reviewCategory = null;
+        let reviewList = [];
+        let reviewIndex = 0;
+
+        async function finishAndShowResult() {
+            document.getElementById('exam-view').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden');
+            syncHomeOnlyFooter();
+
+            const set = activeExam.set;
+            const total = activeExam.shuffledQuestions.length;
+            const posMarks = set.marksPerQuestion || 1.0;
+            const negMarks = set.negativeMarking || 0.25;
+            let correct = 0;
+            let wrong = 0;
+            let skipped = 0;
+
+            activeExam.shuffledQuestions.forEach((qPair, idx) => {
+                const qData = qPair[activeExam.lang] || qPair.hi;
+                const userAns = activeExam.userAnswers[idx];
+                if (userAns === undefined) skipped++;
+                else if (userAns === qData.ans) correct++;
+                else wrong++;
+            });
+
+            const rawScore = (correct * posMarks) - (wrong * negMarks);
+            const finalScore = Math.max(0, rawScore).toFixed(2);
+            const maxScore = (total * posMarks).toFixed(0);
+            const attempted = correct + wrong;
+            const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+
+            const totalTimeSec = activeExam.timeTakenSeconds;
+            const tHrs = String(Math.floor(totalTimeSec / 3600)).padStart(2, '0');
+            const tMins = String(Math.floor((totalTimeSec % 3600) / 60)).padStart(2, '0');
+            const tSecs = String(totalTimeSec % 60).padStart(2, '0');
+
+            document.getElementById('res-set-title').innerText = set.title;
+            document.getElementById('res-score-summary').innerText = `कुल स्कोर: ${finalScore} / ${maxScore} • सटीकता: ${accuracy}% • कुल समय: ${tHrs}:${tMins}:${tSecs}`;
+
+            document.getElementById('res-total').innerText = total;
+            document.getElementById('res-correct').innerText = correct;
+            document.getElementById('res-wrong').innerText = wrong;
+            document.getElementById('res-skipped').innerText = skipped;
+
+            document.getElementById('filtered-questions-wrapper').classList.add('hidden');
+            resetBoxHighlights();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            const currentStudent = window.currentStudent || { uid: 'guest_' + Date.now(), displayName: 'विद्यार्थी' };
+            const attemptPayload = {
+                setId: String(set.id),
+                setTitle: set.title || 'Mock Test',
+                studentUid: currentStudent.uid,
+                studentName: currentStudent.displayName || currentStudent.email || 'विद्यार्थी',
+                totalQuestions: total,
+                correct,
+                wrong,
+                skipped,
+                attempted,
+                score: Number(finalScore),
+                maxScore: Number(maxScore),
+                accuracy,
+                timeTakenSeconds: Number(activeExam.timeTakenSeconds || 0),
+                completedAt: new Date().toISOString()
+            };
+
+            const localLbKey = 'sss_leaderboard_set_' + String(set.id);
+            let localEntries = [];
+            try { localEntries = JSON.parse(localStorage.getItem(localLbKey)) || []; } catch (_) {}
+            const existingIdx = localEntries.findIndex(e => String(e.studentUid) === String(currentStudent.uid));
+            if (existingIdx !== -1) {
+                const prev = localEntries[existingIdx];
+                if (attemptPayload.score > prev.score || (attemptPayload.score === prev.score && attemptPayload.timeTakenSeconds < prev.timeTakenSeconds)) {
+                    localEntries[existingIdx] = attemptPayload;
+                }
+            } else {
+                localEntries.push(attemptPayload);
+            }
+            try { localStorage.setItem(localLbKey, JSON.stringify(localEntries)); } catch (_) {}
+
+            renderLeaderboardRows(localEntries, currentStudent.uid, 'leaderboard-tbody', 'my-rank-pill');
+
+            if (window.studentCloud) {
+                try {
+                    await window.studentCloud.saveAttemptAndLeaderboard(attemptPayload);
+                    const cloudEntries = await window.studentCloud.fetchSetLeaderboard(String(set.id));
+                    if (cloudEntries && cloudEntries.length > 0) {
+                        const mergedMap = new Map();
+                        [...localEntries, ...cloudEntries].forEach(item => {
+                            const prev = mergedMap.get(String(item.studentUid));
+                            if (!prev || Number(item.score) > Number(prev.score) || (Number(item.score) === Number(prev.score) && Number(item.timeTakenSeconds) < Number(prev.timeTakenSeconds))) {
+                                mergedMap.set(String(item.studentUid), item);
+                            }
+                        });
+                        renderLeaderboardRows(Array.from(mergedMap.values()), currentStudent.uid, 'leaderboard-tbody', 'my-rank-pill');
+                    }
+                } catch (_) {}
+            }
+        }
+
+        function resetBoxHighlights() {
+            ['all', 'right', 'wrong', 'skipped'].forEach(type => {
+                const box = document.getElementById(`box-${type}`);
+                if (box) box.classList.remove('ring-4', 'ring-blue-400', 'ring-emerald-400', 'ring-red-400', 'ring-slate-400');
+            });
+        }
+
+        function toggleResultCategory(category) {
+            const wrapper = document.getElementById('filtered-questions-wrapper');
+            resetBoxHighlights();
+
+            if (reviewCategory === category) {
+                reviewCategory = null;
+                wrapper.classList.add('hidden');
+                return;
+            }
+
+            reviewCategory = category;
+            wrapper.classList.remove('hidden');
+            reviewLang = activeExam.lang || 'hi';
+
+            const box = document.getElementById(`box-${category}`);
+            if (category === 'all') box.classList.add('ring-4', 'ring-blue-400');
+            if (category === 'right') box.classList.add('ring-4', 'ring-emerald-400');
+            if (category === 'wrong') box.classList.add('ring-4', 'ring-red-400');
+            if (category === 'skipped') box.classList.add('ring-4', 'ring-slate-400');
+
+            const titles = {
+                'all': '📘 सभी प्रश्न (Total Questions)',
+                'right': '✅ सही उत्तर वाले प्रश्न (Right Questions)',
+                'wrong': '❌ गलत उत्तर वाले प्रश्न (Wrong Questions)',
+                'skipped': '⚪ छोड़े गए प्रश्न (Skipped Questions)'
+            };
+            document.getElementById('filtered-category-title').innerText = titles[category];
+            document.getElementById('review-category-badge').innerText = category.toUpperCase();
+
+            reviewList = [];
+            activeExam.shuffledQuestions.forEach((qPair, idx) => {
+                const qData = qPair[activeExam.lang] || qPair.hi;
+                const userAns = activeExam.userAnswers[idx];
+                const correctAns = qData.ans;
+                const isSkipped = userAns === undefined;
+                const isRight = userAns === correctAns;
+                const isWrong = !isSkipped && !isRight;
+
+                if (category === 'right' && !isRight) return;
+                if (category === 'wrong' && !isWrong) return;
+                if (category === 'skipped' && !isSkipped) return;
+
+                reviewList.push({ qPair, idx, userAns, correctAns });
+            });
+
+            reviewIndex = 0;
+            renderSingleReviewQuestion();
+        }
+
+        function renderSingleReviewQuestion() {
+            const container = document.getElementById('single-review-card-container');
+            container.innerHTML = '';
+
+            if (reviewList.length === 0) {
+                container.innerHTML = `<div class="p-6 text-center text-sm text-slate-500 bg-slate-50 rounded-xl border border-slate-200">इस श्रेणी में कोई प्रश्न नहीं है।</div>`;
+                document.getElementById('btn-review-prev').disabled = true;
+                document.getElementById('btn-review-next').disabled = true;
+                document.getElementById('review-pos-indicator').innerText = `0 / 0`;
+                return;
+            }
+
+            const item = reviewList[reviewIndex];
+            const qData = item.qPair[reviewLang] || item.qPair.hi || item.qPair.en;
+            const qRealIdx = item.idx;
+            const userAns = item.userAns;
+            const correctAns = item.correctAns;
+            const qTimeSec = activeExam.questionTimes[qRealIdx] || 0;
+
+            let statusBadge = '';
+            if (userAns === undefined) statusBadge = `<span class="bg-slate-200 text-slate-700 text-[11px] font-bold px-2 py-0.5 rounded-full">⚪ Skipped</span>`;
+            else if (userAns === correctAns) statusBadge = `<span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">✅ Right</span>`;
+            else statusBadge = `<span class="bg-red-100 text-red-700 text-[11px] font-bold px-2 py-0.5 rounded-full">❌ Wrong</span>`;
+
+            const labels = ['A', 'B', 'C', 'D'];
+            const card = document.createElement('div');
+            card.className = "bg-white rounded-2xl p-4 md:p-6 border border-slate-300 shadow-sm w-full";
+            card.innerHTML = `
+                <div class="mb-4 border-b border-slate-200 pb-4">
+                    <p class="font-bold text-lg md:text-xl leading-relaxed text-slate-900"><span class="text-blue-700 font-extrabold mr-1">Q${qRealIdx + 1}.</span> ${decodeNumericEntities(qData.q)}</p>
+                    <div class="mt-3 flex flex-wrap items-center justify-center gap-2">
+                        <span class="bg-amber-50 text-amber-900 text-[11px] font-bold px-2 py-1 rounded-full border border-amber-200">⏱️ लिया गया समय: ${qTimeSec}s</span>
+                        ${statusBadge}
+                    </div>
+                </div>
+                <div class="space-y-3 my-4 text-sm">
+                    ${qData.options.map((opt, oIdx) => {
+                        opt = decodeNumericEntities(opt);
+                        let boxStyle = "bg-slate-50 border-slate-200 text-slate-700";
+                        if (oIdx === correctAns) boxStyle = "bg-emerald-50 border-emerald-500 text-emerald-900 font-bold shadow-sm";
+                        else if (oIdx === userAns && userAns !== correctAns) boxStyle = "bg-red-50 border-red-400 text-red-900 font-semibold shadow-sm";
+                        return `<div class="p-3.5 rounded-xl border ${boxStyle} flex items-center gap-3"><span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${oIdx === correctAns ? 'bg-emerald-600 text-white' : (oIdx === userAns ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-700')}">${labels[oIdx]}</span><span class="flex-grow">${opt}</span></div>`;
+                    }).join('')}
+                </div>
+                ${qData.exp ? `
+                    <details class="mt-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-slate-900 overflow-hidden">
+                        <summary class="cursor-pointer font-bold text-amber-900 p-3.5 select-none flex items-center justify-between hover:bg-amber-100/60 transition">
+                            <span>💡 विस्तृत व्याख्या (Explanation)</span>
+                            <span class="dropdown-arrow text-amber-800 font-extrabold transition-transform duration-200">▼</span>
+                        </summary>
+                        <div class="px-4 pb-4 pt-2 border-t border-amber-200 leading-relaxed bg-amber-50/40">${decodeNumericEntities(qData.exp)}</div>
+                    </details>
+                ` : ''}
+            `;
+            container.appendChild(card);
+
+            document.getElementById('review-pos-indicator').innerText = `${reviewIndex + 1} / ${reviewList.length}`;
+            const langToggle = document.getElementById('review-language-toggle');
+            if (langToggle) langToggle.innerText = reviewLang === 'hi' ? 'हिंदी → English' : 'English → हिन्दी';
+            document.getElementById('btn-review-prev').disabled = reviewIndex === 0;
+            document.getElementById('btn-review-next').disabled = reviewIndex === reviewList.length - 1;
+
+            if (window.MathJax) MathJax.typesetPromise();
+        }
+
+        function toggleReviewLanguage() {
+            reviewLang = reviewLang === 'hi' ? 'en' : 'hi';
+            renderSingleReviewQuestion();
+        }
+
+        function prevReviewQuestion() {
+            if (reviewIndex > 0) {
+                reviewIndex--;
+                renderSingleReviewQuestion();
+            }
+        }
+
+        function nextReviewQuestion() {
+            if (reviewIndex < reviewList.length - 1) {
+                reviewIndex++;
+                renderSingleReviewQuestion();
+            }
+        }
+
+        function backToHome() {
+            clearInterval(activeExam.intervalId);
+            document.getElementById('exam-view').classList.add('hidden');
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('main-home-view').classList.remove('hidden');
+            syncHomeOnlyFooter();
+            renderPracticeSets();
+        }
+
+        function renderAdminExamManagers() {
+            const mainTags = document.getElementById('admin-main-exams-tags');
+            const parentSelect = document.getElementById('parent-exam-select');
+            mainTags.innerHTML = '';
+            parentSelect.innerHTML = '';
+
+            examHierarchy.forEach(exam => {
+                const tag = document.createElement('span');
+                tag.className = "bg-slate-100 border border-slate-300 text-slate-800 text-[11px] font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5";
+                tag.innerHTML = `${exam.name} <button type="button" onclick="deleteMainExam('${exam.id}')" class="text-red-500 font-bold cursor-pointer">✕</button>`;
+                mainTags.appendChild(tag);
+
+                const opt = document.createElement('option');
+                opt.value = exam.id;
+                opt.innerText = exam.name;
+                parentSelect.appendChild(opt);
+            });
+            renderAdminSubExamTags();
+        }
+
+        function renderAdminSubExamTags() {
+            const parentId = document.getElementById('parent-exam-select').value;
+            const subTags = document.getElementById('admin-sub-exams-tags');
+            subTags.innerHTML = '';
+            const examObj = examHierarchy.find(e => e.id === parentId);
+            if (!examObj) return;
+
+            examObj.subExams.forEach(sub => {
+                const tag = document.createElement('span');
+                tag.className = "bg-blue-50 border border-blue-200 text-blue-900 text-[11px] font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5";
+                tag.innerHTML = `${sub.name} <button type="button" onclick="deleteSubExam('${parentId}', '${sub.id}')" class="text-red-500 font-bold cursor-pointer">✕</button>`;
+                subTags.appendChild(tag);
+            });
+        }
+
+        function addMainExam() {
+            const name = document.getElementById('new-main-exam-inp').value.trim();
+            if (!name) return;
+            const id = 'exam_' + Date.now();
+            examHierarchy.push({ id, name, subExams: [{ id: id + '_gen', name: `${name} General` }] });
+            document.getElementById('new-main-exam-inp').value = '';
+            saveHierarchyToStorage();
+            renderAdminExamManagers();
+            populateMainExamDropdownForSet();
+            renderExamCatalog();
+        }
+
+        function deleteMainExam(examId) {
+            if (confirm("हटाना चाहते हैं?")) {
+                examHierarchy = examHierarchy.filter(e => e.id !== examId);
+                saveHierarchyToStorage();
+                renderAdminExamManagers();
+                populateMainExamDropdownForSet();
+            }
+        }
+
+        function addSubExam() {
+            const parentId = document.getElementById('parent-exam-select').value;
+            const subName = document.getElementById('new-sub-exam-inp').value.trim();
+            if (!parentId || !subName) return;
+            const examObj = examHierarchy.find(e => e.id === parentId);
+            if (examObj) {
+                examObj.subExams.push({ id: 'sub_' + Date.now(), name: subName });
+                document.getElementById('new-sub-exam-inp').value = '';
+                saveHierarchyToStorage();
+                renderAdminSubExamTags();
+                populateMainExamDropdownForSet();
+                renderExamCatalog();
+            }
+        }
+
+        function deleteSubExam(parentId, subId) {
+            const examObj = examHierarchy.find(e => e.id === parentId);
+            if (examObj) {
+                examObj.subExams = examObj.subExams.filter(s => s.id !== subId);
+                saveHierarchyToStorage();
+                renderAdminSubExamTags();
+                populateMainExamDropdownForSet();
+            }
+        }
+
+        function populateMainExamDropdownForSet() {
+            const mainSel = document.getElementById('set-main-exam-inp');
+            mainSel.innerHTML = '';
+            examHierarchy.forEach(exam => {
+                const opt = document.createElement('option');
+                opt.value = exam.id;
+                opt.innerText = exam.name;
+                mainSel.appendChild(opt);
+            });
+            populateSubExamDropdownForSet();
+        }
+
+        function populateSubExamDropdownForSet() {
+            const mainId = document.getElementById('set-main-exam-inp').value;
+            const subSel = document.getElementById('set-sub-exam-inp');
+            subSel.innerHTML = '';
+            const examObj = examHierarchy.find(e => e.id === mainId);
+            if (examObj && examObj.subExams.length > 0) {
+                examObj.subExams.forEach(sub => {
+                    const opt = document.createElement('option');
+                    opt.value = sub.id;
+                    opt.innerText = sub.name;
+                    subSel.appendChild(opt);
+                });
+            } else {
+                const opt = document.createElement('option');
+                opt.value = 'general';
+                opt.innerText = 'General';
+                subSel.appendChild(opt);
+            }
+        }
+
+        function parseAndSavePracticeSet() {
+            const mainExamId = document.getElementById('set-main-exam-inp').value;
+            const subExamId = document.getElementById('set-sub-exam-inp').value;
+            const title = document.getElementById('set-title-inp').value.trim();
+            const duration = parseInt(document.getElementById('set-duration-inp').value) || 15;
+            const posMarks = parseFloat(document.getElementById('set-pos-inp').value) || 1.0;
+            const negMarks = parseFloat(document.getElementById('set-neg-inp').value) || 0.25;
+            const isLocked = true;
+            const rawText = document.getElementById('bulk-questions-inp').value.trim();
+            const editId = document.getElementById('edit-set-id').value;
+
+            if (!title || !rawText) {
+                alert("कृपया नाम और प्रश्न भरें!");
+                return;
+            }
+            const parsedQuestions = parseQuestionsFromText(rawText);
+            if (parsedQuestions.length === 0) {
+                alert("❌ फॉर्मेट सही नहीं है!");
+                return;
+            }
+
+            cloudBackup(editId ? 'सेट एडिट से पहले' : 'नया सेट जोड़ने से पहले');
+
+            if (editId) {
+                const idx = practiceSets.findIndex(s => String(s.id) === String(editId));
+                if (idx !== -1) {
+                    practiceSets[idx] = { ...practiceSets[idx], title, mainExamId, subExamId, durationMinutes: duration, marksPerQuestion: posMarks, negativeMarking: negMarks, isLocked, rawText, questions: parsedQuestions };
+                    cloudSaveSet(practiceSets[idx]);
+                    alert(`✅ प्रैक्टिस सेट अपडेट हो गया! (${parsedQuestions.length} प्रश्न)`);
+                }
+            } else {
+                const newId = Date.now();
+                const newSet = { id: newId, title, mainExamId, subExamId, durationMinutes: duration, marksPerQuestion: posMarks, negativeMarking: negMarks, isLocked, rawText, questions: parsedQuestions };
+                practiceSets.unshift(newSet);
+                cloudSaveSet(newSet);
+                alert(`✅ नया प्रैक्टिस सेट सेव हो गया! (${parsedQuestions.length} प्रश्न)`);
+            }
+
+            saveSetsToStorage();
+            resetAdminForm();
+            renderAdminSetsList();
+            renderPracticeSets();
+        }
+
+        function resetAdminForm() {
+            document.getElementById('edit-set-id').value = '';
+            document.getElementById('set-title-inp').value = '';
+            document.getElementById('bulk-questions-inp').value = '';
+            document.getElementById('form-mode-title').innerText = '➕ प्रैक्टिस सेट और प्रश्न जोड़ें';
+        }
+
+        function editPracticeSet(setId) {
+            const set = practiceSets.find(s => String(s.id) === String(setId));
+            if (!set) return;
+            document.getElementById('edit-set-id').value = String(set.id);
+            document.getElementById('set-main-exam-inp').value = set.mainExamId;
+            populateSubExamDropdownForSet();
+            setTimeout(() => { document.getElementById('set-sub-exam-inp').value = set.subExamId; }, 50);
+            document.getElementById('set-title-inp').value = set.title;
+            document.getElementById('set-duration-inp').value = set.durationMinutes;
+            document.getElementById('set-pos-inp').value = set.marksPerQuestion || 1.0;
+            document.getElementById('set-neg-inp').value = set.negativeMarking || 0.25;
+            document.getElementById('bulk-questions-inp').value = set.rawText || '';
+            document.getElementById('form-mode-title').innerText = '✏️ प्रैक्टिस सेट एडिट करें';
+        }
+
+        function deletePracticeSet(setId) {
+            if (confirm("क्या आप वाकई इस प्रैक्टिस सेट को डिलीट करना चाहते हैं?")) {
+                cloudBackup('सेट डिलीट से पहले');
+                practiceSets = practiceSets.filter(s => String(s.id) !== String(setId));
+                cloudDeleteSet(setId);
+                saveSetsToStorage();
+                renderAdminSetsList();
+                renderPracticeSets();
+            }
+        }
+
+        function renderAdminSetsList() {
+            const container = document.getElementById('admin-sets-list');
+            container.innerHTML = '';
+            practiceSets.forEach(set => {
+                const mainObj = examHierarchy.find(e => e.id === set.mainExamId);
+                const subObj = mainObj?.subExams.find(sub => sub.id === set.subExamId);
+                const pathLabel = `${mainObj ? mainObj.name : ''} ➔ ${subObj ? subObj.name : ''}`;
+                const div = document.createElement('div');
+                div.className = "bg-white p-3.5 rounded-xl border border-slate-200 flex flex-wrap justify-between items-center gap-2";
+                div.innerHTML = `
+                    <div>
+                        <span class="text-[10px] font-bold text-indigo-600 block">${pathLabel}</span>
+                        <span class="font-bold text-xs text-slate-900">${set.title}</span>
+                        <span class="ml-2 text-[11px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-semibold">${set.questions.length} Qs</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="editPracticeSet(${set.id})" class="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold cursor-pointer">✏️ Edit</button>
+                        <button type="button" onclick="deletePracticeSet(${set.id})" class="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold cursor-pointer">🗑️ Delete</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        const legalPagesContent = {
+            about: {
+                title: "📖 हमारे बारे में (About Us) - SANTALI SMART STUDY",
+                html: `<div class="space-y-3"><h4 class="text-base font-bold text-slate-900">SANTALI SMART STUDY में आपका स्वागत है!</h4><p><strong>SANTALI SMART STUDY</strong> एक समर्पित ऑनलाइन एजुकेशनल और मॉक टेस्ट (Mock Test) प्लेटफॉर्म है। यहाँ सभी प्रतियोगी परीक्षाओं के लिए संताली और सामान्य अध्ययन के प्रैक्टिस सेट्स व लीडरबोर्ड उपलब्ध हैं।</p><p>📧 ईमेल: <a href="mailto:bhootn75@gmail.com" class="text-blue-600 underline">bhootn75@gmail.com</a> | 📢 टेलीग्राम: <a href="https://t.me/santalisstudy" target="_blank" class="text-blue-600 underline">@santalisstudy</a></p></div>`
+            },
+            contact: {
+                title: "📞 संपर्क करें (Contact Us)",
+                html: `<div class="space-y-3"><p>किसी भी सहायता या सुझाव के लिए संपर्क करें:</p><p>📧 Email: <a href="mailto:bhootn75@gmail.com" class="text-blue-600 font-bold">bhootn75@gmail.com</a></p><p>📢 Telegram: <a href="https://t.me/santalisstudy" target="_blank" class="text-indigo-600 font-bold">SANTALI SMART STUDY (@santalisstudy)</a></p></div>`
+            },
+            privacy: {
+                title: "🔒 गोपनीयता नीति (Privacy Policy)",
+                html: `<div class="space-y-3"><p><strong>SANTALI SMART STUDY</strong> अपने उपयोगकर्ताओं की गोपनीयता का सम्मान करता है। आपका नाम और स्कोर केवल आपको मॉक टेस्ट परिणाम और लीडरबोर्ड रैंक दिखाने के लिए उपयोग किया जाता है।</p></div>`
+            },
+            terms: {
+                title: "📋 नियम एवं शर्तें (Terms & Conditions)",
+                html: `<div class="space-y-3"><p>इस वेबसाइट पर उपलब्ध सभी मॉक टेस्ट केवल शैक्षिक अभ्यास के लिए हैं।</p></div>`
+            }
+        };
+
+        function openLegalPage(pageKey) {
+            const page = legalPagesContent[pageKey];
+            if (!page) return;
+            document.getElementById('legal-modal-title').innerText = page.title;
+            document.getElementById('legal-modal-body').innerHTML = page.html;
+            document.getElementById('legal-pages-modal').classList.remove('hidden');
+        }
+
+        function closeLegalPage() {
+            document.getElementById('legal-pages-modal').classList.add('hidden');
+        }
+
+        renderExamCatalog();
+        renderPracticeSets();
+        syncHomeOnlyFooter();
+    </script>
+
+    <!-- Official Working Firebase SDK (v10.14.1) for Google Account Picker & Cloud Leaderboard -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import {
+            getAuth,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signInWithRedirect,
+            getRedirectResult,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            updateProfile,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import {
+            getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, addDoc,
+            onSnapshot, query, where, orderBy, limit, serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxfv8UNc9oqeYYRgbSJ46WL6S-XaCrX-s",
+            authDomain: "santali-smart-study.firebaseapp.com",
+            projectId: "santali-smart-study",
+            storageBucket: "santali-smart-study.firebasestorage.app",
+            messagingSenderId: "145439211624",
+            appId: "1:145439211624:web:68516c4dfb2863218bfbdd",
+            measurementId: "G-0E5ER5GG90"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        auth.languageCode = 'hi';
+
+        const googleProvider = new GoogleAuthProvider();
+        googleProvider.setCustomParameters({
+            prompt: 'select_account'
+        });
+
+        window.firebaseSignOut = () => signOut(auth);
+
+        window.cloudSaveStudentProfile = async (studentObj) => {
+            await setDoc(doc(db, 'students', String(studentObj.uid)), {
+                uid: String(studentObj.uid),
+                displayName: studentObj.displayName || 'विद्यार्थी',
+                email: studentObj.email || '',
+                lastLoginAt: serverTimestamp()
+            }, { merge: true });
+        };
+
+        window.firebaseDirectEmailAuth = async (email, password, name) => {
+            let cred;
+            try {
+                cred = await signInWithEmailAndPassword(auth, email, password);
+            } catch (_) {
+                cred = await createUserWithEmailAndPassword(auth, email, password);
+            }
+            if (name) {
+                try { await updateProfile(cred.user, { displayName: name }); } catch (_) {}
+            }
+            return cred.user;
+        };
+
+        window.triggerFirebaseGoogleSignIn = async () => {
+            const btn = document.getElementById('google-login-btn');
+            setAuthStatusText('मोबाइल में लॉगिन सभी Gmail अकाउंट्स की लिस्ट खोली जा रही है...');
+            if (btn) btn.disabled = true;
+
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                await window.completeStudentLogin({
+                    uid: user.uid,
+                    displayName: user.displayName || user.email?.split('@')[0] || 'विद्यार्थी',
+                    email: user.email || ''
+                });
+            } catch (err) {
+                const code = err?.code || '';
+                if (code === 'auth/popup-blocked') {
+                    await signInWithRedirect(auth, googleProvider);
+                    return;
+                } else if (code === 'auth/unauthorized-domain') {
+                    setAuthStatusText('नोट: इस वेबसाइट का डोमेन अभी Firebase Console > Authorized domains में नहीं जुड़ा है। फिलहाल नीचे नाम और Gmail लिखकर तुरंत लॉगिन करें।', true);
+                } else if (code === 'auth/operation-not-allowed') {
+                    setAuthStatusText('नोट: Firebase Console में Google Sign-In अभी Enable नहीं है। कृपया नीचे नाम और Gmail लिखकर तुरंत लॉगिन करें।', true);
+                } else if (code === 'auth/popup-closed-by-user') {
+                    setAuthStatusText('आपने Gmail चुनने वाली विंडो बंद कर दी। दोबारा क्लिक करें।', true);
+                } else {
+                    setAuthStatusText('कृपया नीचे अपना नाम, Gmail और कोई भी 6 अंकों का पासवर्ड डालकर तुरंत Login / Sign In करें।', true);
+                }
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        };
+
+        getRedirectResult(auth).then(async (result) => {
+            if (result && result.user) {
+                const user = result.user;
+                await window.completeStudentLogin({
+                    uid: user.uid,
+                    displayName: user.displayName || user.email?.split('@')[0] || 'विद्यार्थी',
+                    email: user.email || ''
+                });
+            }
+        }).catch(() => {});
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user && !window.currentStudent) {
+                await window.completeStudentLogin({
+                    uid: user.uid,
+                    displayName: user.displayName || user.email?.split('@')[0] || 'विद्यार्थी',
+                    email: user.email || ''
+                });
+            }
+        });
+
+        const clean = (o) => JSON.parse(JSON.stringify(o));
+
+        window.studentCloud = {
+            saveAttemptAndLeaderboard: async (attempt) => {
+                const docId = `${attempt.setId}_${attempt.studentUid}`;
+                const lbRef = doc(db, 'leaderboards', docId);
+                try {
+                    const prevSnap = await getDoc(lbRef);
+                    if (prevSnap.exists()) {
+                        const prev = prevSnap.data();
+                        const isBetter = Number(attempt.score) > Number(prev.score) ||
+                            (Number(attempt.score) === Number(prev.score) && Number(attempt.timeTakenSeconds) < Number(prev.timeTakenSeconds));
+                        if (!isBetter) return;
+                    }
+                    await setDoc(lbRef, { ...clean(attempt), updatedAt: serverTimestamp() });
+                } catch (e) {
+                    console.warn('Cloud leaderboard write:', e);
+                }
+            },
+            fetchSetLeaderboard: async (setId) => {
+                const q = query(collection(db, 'leaderboards'), where('setId', '==', String(setId)));
+                const snap = await getDocs(q);
+                return snap.docs.map(d => d.data());
+            }
+        };
+
+        window.cloud = {
+            saveSet: (set) => setDoc(doc(db, 'practiceSets', String(set.id)), clean(set)),
+            deleteSet: (id) => deleteDoc(doc(db, 'practiceSets', String(id))),
+            saveHierarchy: (items) => setDoc(doc(db, 'config', 'examHierarchy'), { items: clean(items) }),
+            backup: (payload) => addDoc(collection(db, 'backups'), { ...clean(payload), createdAt: serverTimestamp() }),
+            listBackups: async () => {
+                const snap = await getDocs(query(collection(db, 'backups'), orderBy('createdAt', 'desc'), limit(10)));
+                return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            },
+            restore: async ({ sets, hierarchy }) => {
+                const current = await getDocs(collection(db, 'practiceSets'));
+                const keep = new Set(sets.map(s => String(s.id)));
+                const ops = current.docs.filter(d => !keep.has(d.id)).map(d => deleteDoc(d.ref));
+                sets.forEach(s => ops.push(setDoc(doc(db, 'practiceSets', String(s.id)), clean(s))));
+                if (hierarchy) ops.push(setDoc(doc(db, 'config', 'examHierarchy'), { items: clean(hierarchy) }));
+                await Promise.all(ops);
+            }
+        };
+
+        async function initSync() {
+            try {
+                const metaRef = doc(db, 'config', 'meta');
+                const meta = await getDoc(metaRef);
+                if (!meta.exists()) {
+                    const local = window.getLocalData();
+                    await Promise.all([
+                        ...local.sets.map(s => window.cloud.saveSet(s)),
+                        window.cloud.saveHierarchy(local.hierarchy),
+                        setDoc(metaRef, { seeded: true, seededAt: serverTimestamp() })
+                    ]);
+                }
+
+                onSnapshot(collection(db, 'practiceSets'), (snap) => {
+                    const list = snap.docs.map(d => d.data()).sort((a, b) => Number(b.id) - Number(a.id));
+                    if (list.length > 0) window.applyCloudSets(list);
+                });
+                onSnapshot(doc(db, 'config', 'examHierarchy'), (snap) => {
+                    if (snap.exists() && snap.data().items) window.applyCloudHierarchy(snap.data().items);
+                });
+            } catch (e) {
+                console.warn('Firebase sync:', e);
+            }
+        }
+        initSync();
+    </script>
+</body>
+</html>
